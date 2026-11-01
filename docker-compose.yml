@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  artifact-indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: project-portal-indexer
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    restart: unless-stopped
