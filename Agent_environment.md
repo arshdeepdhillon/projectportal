@@ -96,13 +96,14 @@ profile activation mechanism are not specified.
 | Gradle wrapper distribution             | Gradle 9.6.0 binary distribution  | `gradle/wrapper/gradle-wrapper.properties`                                   |
 | Gradle plugins                          | Java plugin                       | `build.gradle`                                                               |
 | Project group / version                 | `com.bu` / `1.0-SNAPSHOT`         | `build.gradle`                                                               |
-| Declared application Java compatibility | Not specified                     | `build.gradle` does not set a Java toolchain or source/target compatibility. |
+| Java toolchain                            | Azul Zulu JDK 17                  | `build.gradle` selects Java 17 and the Azul vendor for compilation and tests. |
 | Spring Boot plugin or dependencies      | Not declared in the current build | `build.gradle`                                                               |
 
-The Java 17 and Spring Boot 3.2+ specification targets should not be read as
-proof that the current build enforces or packages that stack. The current
-`build.gradle` applies the Java plugin and declares JUnit test dependencies;
-it does not declare Spring Boot, JPA, validation, or Jackson dependencies.
+The Java 17 toolchain is configured in the current build. The Spring Boot 3.2+
+specification target should not be read as proof that the current build
+enforces or packages that stack. The current `build.gradle` applies the Java
+plugin and declares JUnit test dependencies; it does not declare Spring Boot,
+JPA, validation, or Jackson dependencies.
 
 ### Current host details
 
@@ -113,8 +114,9 @@ it does not declare Spring Boot, JPA, validation, or Jackson dependencies.
 | CPU architecture                                      | x86_64                                                             |
 | Container or virtual-machine image                    | Not specified (TBD)                                                |
 | Memory and CPU allocation                             | Not specified (TBD)                                                |
-| Installed Java runtime                                | OpenJDK 23.0.1, 64-bit Server VM                                   |
-| Java target for the specified service                 | Java 17 LTS; current build does not declare/enforce that target.   |
+| Installed Java runtime                                | Azul Zulu JDK 17 (user-reported)                                    |
+| Java build toolchain                                   | Azul vendor, Java 17; configured in `build.gradle`.                 |
+| Java target for the specified service                 | Java 17 LTS; matches the configured Java toolchain.                |
 | Database engine, address, and credentials reference   | Not specified (TBD); specification requires a relational database. |
 | Required environment variables and their sources      | Not specified (TBD)                                                |
 | Deployment-specific paths, ports, and resource limits | Not specified (TBD)                                                |

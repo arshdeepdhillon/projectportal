@@ -1,9 +1,17 @@
+// Agent Contribution Weight: [22%] Agent Generated / [78%] Human Refactored
 plugins {
     id 'java'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+        vendor = JvmVendorSpec.AZUL
+    }
+}
+
 group = 'com.bu'
-version = '1.0-SNAPSHOT'
+version = '1.0.0'
 
 repositories {
     mavenCentral()

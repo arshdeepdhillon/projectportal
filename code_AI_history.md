@@ -10,3 +10,9 @@
   limits, remain marked TBD.
 - Human modifications: none, as confirmed by the user.
 - Verification reported in the originating chat: `git diff --check` passed.
+
+## AI AGENT BUILD: Azul Java 17 toolchain
+
+- Updated `build.gradle` to require the Azul vendor's Java 17 toolchain for compilation and tests.
+- Updated `Agent_environment.md` to prominently identify Azul Zulu JDK 17 as the user's installed Java runtime and configured build toolchain.
+- Human modifications: none reported for this change.
