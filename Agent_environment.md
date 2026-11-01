@@ -1,5 +1,5 @@
 ---
- AI Contribution Weight: [100%] AI Generated / [0%] Human Refactored
+ AI Contribution Weight: [ 92% ] AI Generated / [8%] Human Refactored
 ---
 
 # Agent Environment (Draft)
@@ -127,3 +127,15 @@ and host observations were supplied by the current execution environment or
 queried from the host. Values marked TBD are not available through these
 sources and must be obtained from the relevant service or host administrator
 if a complete deployment configuration is required.
+
+## 6. Operational Guardrails & Guidelines
+
+To maintain code quality and strict adherence to enterprise design patterns, the agent operates under the following
+local workspace instructions (.github/copilot-instructions.md):
+
+* Strict Null Safety: Mandatory use of Jakarta Bean Validation (@NotNull, @Size) and Java Optional wrappers where
+  applicable.
+* Encapsulation & Lombok: Utilization of Lombok (@Getter, @Setter) to reduce boilerplate while maintaining explicit
+  entity relationship boundaries.
+* Locale Enforcement: Forcing explicit JVM locales (Locale.US) during data formatting or serialization tasks to prevent
+  data corruption.
