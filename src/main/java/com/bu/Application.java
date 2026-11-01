@@ -1,5 +1,9 @@
 package com.bu;
 
+/*
+ * AI Contribution Weight: [0%] AI Generated / [100%] Human Refactored
+ */
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Application {

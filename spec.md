@@ -1,13 +1,20 @@
+---
+ AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
+---
+   
 # Technical Functional Specification: Academic Artifact Catalog Service
 
 ## 1. Overview & Scope
 
-The **Academic Artifact Catalog Service** is a Spring Boot 3 (Java 17) microservice responsible for indexing, categorizing, and serving metadata for three distinct types of academic artifacts:
+The **Academic Artifact Catalog Service** is a Spring Boot 3 (Java 17) microservice responsible for indexing,
+categorizing, and serving metadata for three distinct types of academic artifacts:
+
 1. **Git Repository Profiles** (code repositories, open-source tools, scripts)
 2. **Academic Manuscript Documents** (papers, preprints, technical reports)
 3. **Video Presentation Metadata** (lectures, talk recordings, conference presentations)
 
 Each artifact can be dynamically associated across multiple academic organizational contexts:
+
 - **Academic Labs** (e.g., Vision & Learning Lab)
 - **Department Programs** (e.g., Department of Computer Science)
 - **Course Affiliations** (e.g., CS-701 Deep Learning)
@@ -28,6 +35,7 @@ Each artifact can be dynamically associated across multiple academic organizatio
 ## 3. Entity Data Model (JPA Mappings)
 
 ### 3.1 Entity Relationship Diagram (Logical)
+
 - `Artifact` (Abstract Base Class / Single Table Inheritance)
   - `GitRepositoryArtifact`
   - `ManuscriptArtifact`
@@ -36,11 +44,13 @@ Each artifact can be dynamically associated across multiple academic organizatio
 - `DepartmentProgram`
 - `CourseAffiliation`
 
-Many-to-Many associations exist between `Artifact` and each of the three academic context entities using explicit join tables.
+Many-to-Many associations exist between `Artifact` and each of the three academic context entities using explicit join
+tables.
 
 ### 3.2 Core JPA Entity Definitions
 
 #### Base Class: `Artifact.java`
+
 ```java
 package com.academic.catalog.entity;
 
@@ -49,6 +59,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -84,31 +95,32 @@ public abstract class Artifact {
 
     @ManyToMany
     @JoinTable(
-        name = "artifact_lab_associations",
-        joinColumns = @JoinColumn(name = "artifact_id"),
-        inverseJoinColumns = @JoinColumn(name = "lab_id")
+            name = "artifact_lab_associations",
+            joinColumns = @JoinColumn(name = "artifact_id"),
+            inverseJoinColumns = @JoinColumn(name = "lab_id")
     )
     private Set<AcademicLab> labs = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
-        name = "artifact_department_associations",
-        joinColumns = @JoinColumn(name = "artifact_id"),
-        inverseJoinColumns = @JoinColumn(name = "department_id")
+            name = "artifact_department_associations",
+            joinColumns = @JoinColumn(name = "artifact_id"),
+            inverseJoinColumns = @JoinColumn(name = "department_id")
     )
     private Set<DepartmentProgram> departments = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
-        name = "artifact_course_associations",
-        joinColumns = @JoinColumn(name = "artifact_id"),
-        inverseJoinColumns = @JoinColumn(name = "course_id")
+            name = "artifact_course_associations",
+            joinColumns = @JoinColumn(name = "artifact_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id")
     )
     private Set<CourseAffiliation> courses = new HashSet<>();
 }
 ```
 
 #### Subclass: `GitRepositoryArtifact.java`
+
 ```java
 package com.academic.catalog.entity;
 
@@ -143,12 +155,14 @@ public class GitRepositoryArtifact extends Artifact {
 ```
 
 #### Subclass: `ManuscriptArtifact.java`
+
 ```java
 package com.academic.catalog.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDate;
 
 @Entity
@@ -175,6 +189,7 @@ public class ManuscriptArtifact extends Artifact {
 ```
 
 #### Subclass: `VideoPresentationArtifact.java`
+
 ```java
 package com.academic.catalog.entity;
 
@@ -210,6 +225,7 @@ package com.academic.catalog.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.UUID;
 
 @Entity
@@ -267,100 +283,205 @@ public class CourseAffiliation {
 
 ### 4.1 Endpoint Matrix
 
-| Method | Endpoint | Description | Query Parameters / Filters |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/artifacts` | Search & list all artifacts (paginated) | `type`, `labId`, `departmentId`, `courseId`, `search`, `page`, `size`, `sort` |
-| `GET` | `/api/v1/artifacts/{id}` | Fetch a single artifact by UUID | N/A |
-| `POST` | `/api/v1/artifacts` | Create a new artifact profile | N/A |
-| `PUT` | `/api/v1/artifacts/{id}` | Update an existing artifact | N/A |
-| `DELETE` | `/api/v1/artifacts/{id}` | Delete an artifact by UUID | N/A |
-| `GET` | `/api/v1/labs` | List academic labs | `page`, `size`, `sort` |
-| `GET` | `/api/v1/departments` | List department programs | `page`, `size`, `sort` |
-| `GET` | `/api/v1/courses` | List course affiliations | `page`, `size`, `sort` |
+| Method   | Endpoint                 | Description                             | Query Parameters / Filters                                                    |
+|:---------|:-------------------------|:----------------------------------------|:------------------------------------------------------------------------------|
+| `GET`    | `/api/v1/artifacts`      | Search & list all artifacts (paginated) | `type`, `labId`, `departmentId`, `courseId`, `search`, `page`, `size`, `sort` |
+| `GET`    | `/api/v1/artifacts/{id}` | Fetch a single artifact by UUID         | N/A                                                                           |
+| `POST`   | `/api/v1/artifacts`      | Create a new artifact profile           | N/A                                                                           |
+| `PUT`    | `/api/v1/artifacts/{id}` | Update an existing artifact             | N/A                                                                           |
+| `DELETE` | `/api/v1/artifacts/{id}` | Delete an artifact by UUID              | N/A                                                                           |
+| `GET`    | `/api/v1/labs`           | List academic labs                      | `page`, `size`, `sort`                                                        |
+| `GET`    | `/api/v1/departments`    | List department programs                | `page`, `size`, `sort`                                                        |
+| `GET`    | `/api/v1/courses`        | List course affiliations                | `page`, `size`, `sort`                                                        |
 
 ---
 
 ## 5. JSON Schemas
 
 ### 5.1 Standard Paginated Response Envelope Schema (`paginated-response.json`)
+
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "PaginatedResponse",
   "type": "object",
-  "required": ["content", "page", "size", "totalElements", "totalPages", "last"],
+  "required": [
+    "content",
+    "page",
+    "size",
+    "totalElements",
+    "totalPages",
+    "last"
+  ],
   "properties": {
     "content": {
       "type": "array",
-      "items": { "type": "object" }
+      "items": {
+        "type": "object"
+      }
     },
-    "page": { "type": "integer", "minimum": 0 },
-    "size": { "type": "integer", "minimum": 1 },
-    "totalElements": { "type": "integer", "minimum": 0 },
-    "totalPages": { "type": "integer", "minimum": 0 },
-    "last": { "type": "boolean" }
+    "page": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "totalElements": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "totalPages": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "last": {
+      "type": "boolean"
+    }
   }
 }
 ```
 
 ### 5.2 Artifact Request/Response Payload Schema (`artifact-dto.json`)
+
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "ArtifactDTO",
   "type": "object",
-  "required": ["id", "title", "artifactType", "createdAt", "updatedAt"],
+  "required": [
+    "id",
+    "title",
+    "artifactType",
+    "createdAt",
+    "updatedAt"
+  ],
   "properties": {
-    "id": { "type": "string", "format": "uuid" },
-    "title": { "type": "string", "maxLength": 255 },
-    "description": { "type": ["string", "null"] },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "artifactType": {
       "type": "string",
-      "enum": ["GIT_REPOSITORY", "MANUSCRIPT", "VIDEO_PRESENTATION"]
+      "enum": [
+        "GIT_REPOSITORY",
+        "MANUSCRIPT",
+        "VIDEO_PRESENTATION"
+      ]
     },
-    "createdAt": { "type": "string", "format": "date-time" },
-    "updatedAt": { "type": "string", "format": "date-time" },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
     "gitDetails": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
-        "repoUrl": { "type": "string", "format": "uri" },
-        "primaryLanguage": { "type": "string" },
-        "starCount": { "type": "integer" },
-        "forkCount": { "type": "integer" },
-        "licenseName": { "type": "string" },
-        "defaultBranch": { "type": "string" }
+        "repoUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "primaryLanguage": {
+          "type": "string"
+        },
+        "starCount": {
+          "type": "integer"
+        },
+        "forkCount": {
+          "type": "integer"
+        },
+        "licenseName": {
+          "type": "string"
+        },
+        "defaultBranch": {
+          "type": "string"
+        }
       }
     },
     "manuscriptDetails": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
-        "doi": { "type": "string" },
-        "publicationVenue": { "type": "string" },
-        "publicationDate": { "type": "string", "format": "date" },
-        "documentPdfUrl": { "type": "string", "format": "uri" },
-        "citationCount": { "type": "integer" }
+        "doi": {
+          "type": "string"
+        },
+        "publicationVenue": {
+          "type": "string"
+        },
+        "publicationDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "documentPdfUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "citationCount": {
+          "type": "integer"
+        }
       }
     },
     "videoDetails": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
-        "videoUrl": { "type": "string", "format": "uri" },
-        "platformName": { "type": "string" },
-        "durationSeconds": { "type": "integer" },
-        "thumbnailUrl": { "type": "string", "format": "uri" }
+        "videoUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "platformName": {
+          "type": "string"
+        },
+        "durationSeconds": {
+          "type": "integer"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "format": "uri"
+        }
       }
     },
     "labIds": {
       "type": "array",
-      "items": { "type": "string", "format": "uuid" }
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
     },
     "departmentIds": {
       "type": "array",
-      "items": { "type": "string", "format": "uuid" }
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
     },
     "courseIds": {
       "type": "array",
-      "items": { "type": "string", "format": "uuid" }
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
     }
   }
 }
@@ -370,7 +491,8 @@ public class CourseAffiliation {
 
 ## 6. Static Enterprise Mock Data Structure
 
-Below is the local JSON seed data fixture structure (`src/main/resources/mocks/artifacts-fixture.json`), utilized during integration testing and developer static mocking mode.
+Below is the local JSON seed data fixture structure (`src/main/resources/mocks/artifacts-fixture.json`), utilized during
+integration testing and developer static mocking mode.
 
 ```json
 {

@@ -1,3 +1,7 @@
+---
+ AI Contribution Weight: [100%] AI Generated / [0%] Human Refactored
+---
+
 # Agent Environment (Draft)
 
 This document records the configuration visible for the current autonomous AI
