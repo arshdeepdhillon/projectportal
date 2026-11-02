@@ -4,7 +4,7 @@
 
 ## AI AGENT BUILD: Minimal Spring Boot persistence proof
 
-- Version: uncommitted working-tree change.
+- Commit: `37981213caf0c20b8eb6f19ad97768d1f14c69e3` (`AI AGENT BUILD: Minimal Spring Boot persistence proof`).
 - Replaced the console demo with Spring Boot startup and a minimal one-value JPA record, repository, service, and controller. Added a Flyway migration, PostgreSQL runtime configuration, H2 functional-test configuration, executable Boot JAR packaging, and a single HTTP save/fetch functional test. Updated Docker Compose, the Dockerfile, Gradle dependency locks, and README usage notes.
 - Changed source hunks: implementation and test logic below was added by the agent, replacing the original demo/sample tests. The user subsequently renamed the test classes to match their `Sample*Test.java` filenames; those two class declaration lines are human-authored. Formatting-only edits are excluded from attribution.
 - Per-file snapshots:
