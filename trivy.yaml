@@ -1,0 +1,3 @@
+# Agent Contribution Weight: [100%] Agent Generated / [0%] Human Refactored
+pkg:
+  include-dev-deps: true

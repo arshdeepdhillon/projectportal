@@ -16,3 +16,10 @@
 - Updated `build.gradle` to require the Azul vendor's Java 17 toolchain for compilation and tests.
 - Updated `Agent_environment.md` to prominently identify Azul Zulu JDK 17 as the user's installed Java runtime and configured build toolchain.
 - Human modifications: none reported for this change.
+
+## AI AGENT BUILD: DevSecOps GitHub Actions pipeline
+
+- Added `.github/workflows/devsecops.yml` to build the Docker image on pushes and pull requests, scan Gradle dependencies and the built image with Trivy (failing on HIGH and CRITICAL findings), and run Semgrep SAST. Third-party actions and the Semgrep image are pinned to immutable references.
+- Enabled Gradle dependency locking in `build.gradle` and committed the lockfile consumed by the Docker build and Trivy.
+- Verification: Docker image build succeeded; actionlint passed; Semgrep reported zero findings; Trivy dependency and image scans reported zero HIGH/CRITICAL vulnerabilities.
+- Human modifications: none reported for this change.
