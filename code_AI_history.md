@@ -23,3 +23,9 @@
 - Enabled Gradle dependency locking in `build.gradle` and committed the lockfile consumed by the Docker build and Trivy.
 - Verification: Docker image build succeeded; actionlint passed; Semgrep reported zero findings; Trivy dependency and image scans reported zero HIGH/CRITICAL vulnerabilities.
 - Human modifications: none reported for this change.
+
+## AI AGENT BUILD: DevSecOps workflow non-blocking
+
+- Updated `.github/workflows/devsecops.yml` so the Semgrep SAST and Trivy scan steps continue on findings instead of failing the GitHub Actions job, while still logging results and preserving scan coverage.
+- Verification: the workflow YAML parsed successfully with PyYAML after installing the missing dependency in the environment.
+- Human modifications: the user committed Trivy `exit-code: '0'` settings to make dependency and image findings non-blocking. The workflow attribution header was updated to 80% Agent Generated / 20% Human Refactored to reflect the final contributions.
