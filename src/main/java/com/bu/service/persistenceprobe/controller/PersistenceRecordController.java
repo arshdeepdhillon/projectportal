@@ -19,39 +19,55 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/records")
-public class PersistenceRecordController {
-    private final PersistenceRecordService service;
+public class PersistenceRecordController
+{
+    private final PersistenceRecordService m_service;
 
-    public PersistenceRecordController(PersistenceRecordService service) {
-        this.service = service;
+    public PersistenceRecordController( PersistenceRecordService service )
+    {
+        this.m_service = service;
+    }
+
+    @GetMapping
+    public List<RecordResponse> getAll()
+    {
+        return m_service.getAll().stream()
+                .map( this::toResponse )
+                .toList();
     }
 
     @PostMapping
-    public ResponseEntity<RecordResponse> save(@Valid @RequestBody RecordRequest request) {
-        RecordResponse response = toResponse(service.save(request.value()));
+    public ResponseEntity<RecordResponse> save( @Valid @RequestBody RecordRequest request )
+    {
+        RecordResponse response = toResponse( m_service.save( request.value() ) );
         URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .path("/{id}")
-                .buildAndExpand(response.id())
+                .path( "/{id}" )
+                .buildAndExpand( response.id() )
                 .toUri();
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.created( location ).body( response );
     }
 
     @GetMapping("/{id}")
-    public RecordResponse getById(@PathVariable UUID id) {
-        return toResponse(service.getById(id));
+    public RecordResponse getById( @PathVariable UUID id )
+    {
+        return toResponse( m_service.getById( id ) );
     }
 
-    private RecordResponse toResponse(PersistenceRecord record) {
-        return new RecordResponse(record.getId(), record.getValue());
+    private RecordResponse toResponse( PersistenceRecord record )
+    {
+        return new RecordResponse( record.getId(), record.getValue() );
     }
 
-    public record RecordRequest(@NotBlank @Size(max = 255) String value) {
+    public record RecordRequest( @NotBlank @Size(max = 255) String value )
+    {
     }
 
-    public record RecordResponse(UUID id, String value) {
+    public record RecordResponse( UUID id, String value )
+    {
     }
 }
