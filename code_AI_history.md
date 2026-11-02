@@ -4,7 +4,7 @@
 
 ## AI AGENT BUILD: IDE database without PostgreSQL
 
-- Working-tree change (uncommitted).
+- Implementation commit: `4f3c0d3` (`AI AGENT BUILD: IDE database without PostgreSQL`).
 - Configured the default `dev` profile to use a persistent H2 database under `build/dev-db/`, moved H2 onto the
   application runtime classpath, and explicitly selected the existing PostgreSQL datasource profile in Docker Compose.
 - Documented IDE startup, local database persistence/cleanup, and direct PostgreSQL usage in `README.md`.
