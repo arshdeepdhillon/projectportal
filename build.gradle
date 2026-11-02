@@ -1,6 +1,7 @@
-// Agent Contribution Weight: [22%] Agent Generated / [78%] Human Refactored
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
 java {
@@ -21,12 +22,42 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
+sourceSets {
+    functionalTest {
+        java.srcDirs = ['src/functionaltest/java']
+        resources.srcDirs = ['src/functionaltest/resources']
+    }
+}
+
+tasks.register('functionaltest', Test) {
+    description = 'Runs functional tests.'
+
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
+
+    useJUnitPlatform()
+}
+
 dependencies {
-    testImplementation platform('org.junit:junit-bom:6.0.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Spring Boot related
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Functional Testing related
+    functionalTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+    functionalTestCompileOnly 'org.projectlombok:lombok'
+    functionalTestAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 test {
     useJUnitPlatform()
 }
+
