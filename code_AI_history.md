@@ -2,6 +2,14 @@
  AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
 ---
 
+## AI AGENT BUILD: Jackson pretty-print startup fix
+
+- Version: uncommitted working-tree change.
+- Removed the unsupported `spring.jackson.generator.write-end-of-line-after-value` setting from the user's `application.properties`; retained their `spring.jackson.serialization.indent-output=true` setting. No functional test edits.
+- Converted the H2 Spring test profile from `application-test.yml` to equivalent `application-test.properties`; non-Spring YAML remains unchanged.
+- Changed hunk: the deleted unsupported generator property was agent-modified; the remaining properties and existing formatting configuration are unchanged.
+- Verification: `./gradlew clean build --no-daemon` passed in the Azul Java 17 container; `docker compose config --quiet` passed.
+
 ## AI AGENT BUILD: Minimal Spring Boot persistence proof
 
 - Commit: `37981213caf0c20b8eb6f19ad97768d1f14c69e3` (`AI AGENT BUILD: Minimal Spring Boot persistence proof`).
