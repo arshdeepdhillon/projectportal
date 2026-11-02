@@ -32,6 +32,10 @@
       to whole percentages and set the human percentage as the remainder so the total is exactly 100%.
 * Whenever an agent is used to generate or modify code, it must clearly log its interaction and how they are modified
   and/or verified in a single entry such as code_AI_history.md.
+    * For every conversation/task recorded in code_AI_history.md, append all user prompts and clarification/choice
+      responses verbatim and in order to Prompt_test_log.md, using the next sequential `### Prompt <#> <Chat description>`
+      heading. Do not paraphrase or omit follow-up prompts. If an older conversation's exact prompts are unavailable,
+      say so explicitly instead of reconstructing them.
     * For example: Each git commit must be labeled to track the evolution of contributions over time.
     * AI AGENT BUILD: [Feature Name] – Used when the agent modifies code.
     * HUMAN MOD: [Feature Name] – Used when the user manually modifies code.

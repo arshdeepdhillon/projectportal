@@ -599,3 +599,67 @@ the checked-in build currently uses plain Gradle and Java 17, so the pipeline fo
 
 Response: Appended this conversation to `Prompt_test_log.md` using the existing numbered prompt format.
 
+---
+
+### Prompt 4 **IDE Database Without PostgreSQL**
+
+*User prompt: [[PLAN]] There is currently one limitation when i try to run the applicaiton IDE task, spring boot runs
+then fails because it expects the DB to be running, but its not. This will make development very difficult.
+
+```
+2026-11-01T23:41:46.546-07:00 ERROR 41988 --- [project-portal] [           main] o.s.boot.SpringApplication : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory'
+defined in class path resource
+[org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency
+'flywayInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name
+'flywayInitializer' defined in class path resource
+[org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain
+connection from database: Connection to localhost:5432 refused. Check that the hostname and port are correct and that
+the postmaster is accepting TCP/IP connections.
+
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the
+postmaster is accepting TCP/IP connections.
+```
+
+Assistant asked how the IDE run task should handle the missing database.
+
+*User response: Use an embedded H2 database for IDE/local development (Recommended).*
+
+Assistant asked whether the local database should be in-memory or file-backed.
+
+*User response: File-backed, persist local data. A INtellij task can be created which cleans up such files when the
+normal 'clean' task is ran.*
+
+Assistant presented the plan: use a file-backed H2 database under Gradle's `build/` directory for default development,
+keep PostgreSQL for Docker Compose via an explicit profile, update documentation, and verify startup and cleanup.
+
+Response: Implemented the default H2 development profile, preserved PostgreSQL for Compose, updated dependency locking
+and README instructions, and recorded the change in `code_AI_history.md`. The clean build, Compose validation,
+startup/HTTP, persistence across restart, and Gradle clean removal checks passed.
+
+*User prompt: commit*
+
+Assistant requested explicit confirmation before committing.
+
+*User response: Yes, commit these changes.*
+
+The implementation was committed as `4f3c0d3`. Assistant requested separate confirmation to record that commit hash in
+`code_AI_history.md`.
+
+*User response: Yes, commit the history correction.*
+
+The history correction was committed as `ac336b3`.
+
+---
+
+### Prompt 5 **Log User Prompts for History Entries**
+
+*User prompt: Make sure to also put all the user prompt from converstations done in code_AI_history.md into
+Prompt_test_log.md. Update your S:Agent_environment.md or S:copilot-instructions.md so you remember.*
+
+Response: Added the available user prompts and decision responses from the IDE database conversation to this log, and
+updated `.github/copilot-instructions.md` to require verbatim prompt logging for future `code_AI_history.md` entries.
+Exact prompts from older conversations not present in the accessible session were not inferred or fabricated.

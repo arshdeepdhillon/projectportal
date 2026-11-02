@@ -2,6 +2,17 @@
  AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
 ---
 
+## AI AGENT BUILD: User prompt history logging
+
+- Working-tree change (uncommitted).
+- Appended the available exact user prompts and clarification/commit responses from the IDE database conversation to
+  `Prompt_test_log.md`. Added a rule to `.github/copilot-instructions.md` requiring future `code_AI_history.md` task
+  entries to retain all exact user prompts and choice responses in order in the prompt log.
+- Changed documentation hunks in `Prompt_test_log.md`, `.github/copilot-instructions.md`, and this history entry were
+  agent-authored. Older conversations' exact prompts were not available in this session and were not reconstructed.
+- No source code files changed.
+- Verification: `git diff --check` passed; the appended prompt entries and instruction rule were reviewed.
+
 ## AI AGENT BUILD: IDE database without PostgreSQL
 
 - Implementation commit: `4f3c0d3` (`AI AGENT BUILD: IDE database without PostgreSQL`).
