@@ -26,6 +26,7 @@
 
 ## AI AGENT BUILD: DevSecOps workflow non-blocking
 
+- Commit: `cb6ee8d` (`AI AGENT BUILD: DevSecOps attribution and non-blocking workflow`).
 - Updated `.github/workflows/devsecops.yml` so the Semgrep SAST and Trivy scan steps continue on findings instead of failing the GitHub Actions job, while still logging results and preserving scan coverage.
 - Verification: the workflow YAML parsed successfully with PyYAML after installing the missing dependency in the environment.
 - Human modifications: the user committed Trivy `exit-code: '0'` settings to make dependency and image findings non-blocking. The workflow attribution header was updated to 80% Agent Generated / 20% Human Refactored to reflect the final contributions.
