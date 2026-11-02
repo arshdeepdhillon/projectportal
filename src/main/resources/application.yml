@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: project-portal
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/projectportal}
+    username: ${DB_USERNAME:projectportal}
+    password: ${DB_PASSWORD:projectportal-local}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true

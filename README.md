@@ -8,64 +8,42 @@ innovative student designs.
 
 ## Current implementation status
 
-The checked-in application is currently a Java 17 console demo (`com.bu.Application`), not yet the Spring Boot API
-described in [spec.md](spec.md). It prints a greeting and exits; there is no HTTP server or API available on port 8080.
-The Dockerfile and Compose configuration provide a Java 17 container build and launch, but do not turn the demo into a
-long-running web service. Do not treat this version as a production API deployment.
+The project is a minimal Spring Boot/JPA persistence proof: it stores a single string value in PostgreSQL and exposes
+HTTP endpoints to save and fetch that record. This intentionally does not implement the artifact catalog model or API
+described in [spec.md](spec.md).
 
 ## Prerequisites
 
 - Java 17 (Azul Zulu is configured as the Gradle toolchain) for local builds.
-- Docker with the Docker Compose v2 plugin for container builds and runs.
+- Docker with the Docker Compose v2 plugin for the containerized service and PostgreSQL database.
 
 ## Build and test locally
 
-From the repository root, build the JAR and run the test suite with the Gradle wrapper:
+Build the executable JAR and run unit tests plus the functional test. The functional test exercises the controller,
+service, JPA repository, and an isolated H2 database:
 
 ```powershell
 .\gradlew.bat clean build
 ```
 
-On macOS/Linux, run `./gradlew clean build`. To run only the tests, use `.\gradlew.bat test` (or `./gradlew test`).
+On macOS/Linux, run `./gradlew clean build`.
 
-Run the built console application:
+## Run with PostgreSQL
 
-```powershell
-java -cp build\libs\project-portal-1.0.0.jar com.bu.Application
-```
-
-On macOS/Linux, use `java -cp build/libs/project-portal-1.0.0.jar com.bu.Application`.
-
-## Build and run the Docker container
-
-Build the image:
+Start the application and PostgreSQL database:
 
 ```shell
-docker compose build
+docker compose up --build
 ```
 
-Run the demo once and print its output in the terminal:
+`POST /api/v1/records` accepts `{"value":"hello persistence"}` and returns a record containing its generated `id`.
+Fetch it with `GET /api/v1/records/{id}`. Compose stores PostgreSQL data in a named volume. Default credentials are for
+local development only; set `DB_NAME`, `DB_USERNAME`, and `DB_PASSWORD` in the environment or a local `.env` file
+before exposing the service beyond a developer machine.
 
-```shell
-docker compose run --rm --no-deps artifact-indexer
-```
-
-The container exits after the demo finishes. The Compose service maps port 8080 for the future API, but the current
-application does not listen on that port.
-
-## Deploy on a Docker host
-
-For the current console demo, deploy by checking out the repository on a host with Docker Compose v2, then run:
-
-```shell
-docker compose build
-docker compose run --rm --no-deps artifact-indexer
-```
-
-This builds the image on the target host and runs the demo once; it does not publish an image to a registry or deploy
-a persistent API. The GitHub Actions workflow builds and scans the image but does not publish it. A production API
-deployment requires implementing the Spring Boot web service from `spec.md` and selecting a hosting target and image
-registry.
+The application also supports local execution with PostgreSQL at
+`jdbc:postgresql://localhost:5432/projectportal`. Override `SPRING_DATASOURCE_URL`, `DB_USERNAME`, and `DB_PASSWORD`
+as needed. Flyway applies migrations automatically and Hibernate validates the schema at startup.
 
 ## Dependency lockfile
 

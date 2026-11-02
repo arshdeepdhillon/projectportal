@@ -13,7 +13,7 @@ RUN sed -i 's/\r$//' ./gradlew \
 
 # Copy source code and build the application jar
 COPY src ./src
-RUN ./gradlew jar --no-daemon
+RUN ./gradlew bootJar --no-daemon
 
 # --- Stage 2: Runtime Phase ---
 FROM eclipse-temurin:17-jre-jammy
@@ -24,7 +24,7 @@ RUN groupadd -g 1000 appgroup && useradd -u 1000 -g appgroup -s /bin/sh appuser
 USER appuser:appgroup
 
 # Copy the built jar from the builder stage
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/build/libs/project-portal.jar app.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-cp", "app.jar", "com.bu.Application"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

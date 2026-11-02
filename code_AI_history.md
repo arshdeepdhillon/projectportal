@@ -2,6 +2,43 @@
  AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
 ---
 
+## AI AGENT BUILD: Minimal Spring Boot persistence proof
+
+- Version: uncommitted working-tree change.
+- Replaced the console demo with Spring Boot startup and a minimal one-value JPA record, repository, service, and controller. Added a Flyway migration, PostgreSQL runtime configuration, H2 functional-test configuration, executable Boot JAR packaging, and a single HTTP save/fetch functional test. Updated Docker Compose, the Dockerfile, Gradle dependency locks, and README usage notes.
+- Changed source hunks: implementation and test logic below was added by the agent, replacing the original demo/sample tests. The user subsequently renamed the test classes to match their `Sample*Test.java` filenames; those two class declaration lines are human-authored. Formatting-only edits are excluded from attribution.
+- Per-file snapshots:
+  - File: `src/main/java/com/bu/Application.java` — Agent lines: 9; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/model/PersistenceRecord.java` — Agent lines: 32; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/repository/PersistenceRecordRepository.java` — Agent lines: 6; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/persistenceprobe/featureservice/PersistenceRecordService.java` — Agent lines: 24; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/persistenceprobe/controller/PersistenceRecordController.java` — Agent lines: 44; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/SampleUnitTest.java` — Agent lines: 25; Human lines: 1; Agent: 96%; Human: 4%
+  - File: `src/functionaltest/java/com/bu/service/SampleFunctionalTest.java` — Agent lines: 36; Human lines: 1; Agent: 97%; Human: 3%
+  - File: `src/main/resources/db/migration/V1__create_persistence_records.sql` — Agent lines: 4; Human lines: 0; Agent: 100%; Human: 0%
+- Verification: `./gradlew clean build --no-daemon` passed in the Azul Java 17 container; `docker compose config --quiet` and `docker compose build` succeeded. A temporary PostgreSQL 16 container smoke test also started the built app, applied the Flyway migration, and passed HTTP save/fetch; the temporary containers and network were removed afterward.
+- Human modifications: none reported.
+
+## AI AGENT BUILD: Deferred artifact vertical slice
+
+- Version: retained in Git stash `4250b77d6eb061e58a2db53fea61febcd65a8e0b` (`stash@{0}`), not in the active working tree.
+- Before the scope was reduced, implemented a Git repository artifact entity/API slice with JPA inheritance, DTOs, service, controller, H2 test, and related PostgreSQL/Flyway configuration. The user requested a one-field persistence proof for this release; this implementation is preserved for possible later use.
+- Changed source hunks: all current source hunks in the stashed files below were agent-authored; no human modifications were reported.
+- Stashed per-file snapshots:
+  - File: `src/main/java/com/bu/Application.java` — Agent lines: 9; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/model/Artifact.java` — Agent lines: 72; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/repository/GitRepositoryArtifactRepository.java` — Agent lines: 6; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/GitRepositoryArtifactRequest.java` — Agent lines: 14; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/GitRepositoryArtifactResponse.java` — Agent lines: 17; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/controller/GitRepositoryArtifactController.java` — Agent lines: 38; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/GitRepositoryArtifact.java` — Agent lines: 63; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/GitRepositoryArtifactService.java` — Agent lines: 55; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/UnitTest.java` — Agent lines: 46; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/FunctionalTest.java` — Agent lines: 51; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/resources/db/migration/V1__create_artifacts.sql` — Agent lines: 14; Human lines: 0; Agent: 100%; Human: 0%
+- Verification before shelving: the Gradle clean build and functional test passed. The final validation for this release is recorded in the minimal persistence entry above.
+- Human modifications: none reported.
+
 ## AI AGENT BUILD: Spec attribution correction
 
 - Updated `spec.md` attribution header to reflect that the current file is baseline human-authored documentation rather than AI-generated content, matching the repository's contribution accounting guidance for files without a retained AI-authored history.
