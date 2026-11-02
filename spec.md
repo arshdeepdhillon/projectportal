@@ -1,5 +1,5 @@
 ---
- AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
+ AI Contribution Weight: [ 97% ] AI Generated / [3%] Human Refactored
 ---
    
 # Technical Functional Specification: Academic Artifact Catalog Service
@@ -29,6 +29,29 @@ Each artifact can be dynamically associated across multiple academic organizatio
 - **Data Validation:** Jakarta Bean Validation (`jakarta.validation`)
 - **JSON Processing:** Jackson 2.x
 - **Data Seed Strategy:** Local JSON fixture files loaded on `@Profile("dev")` or `@Profile("test")` startup.
+
+---
+
+## 2.1 Project Directory Structure
+
+```text
+projectportal/
+├── src/main/java/com/bu
+│   ├── config/                     # Spring / Application configurations
+│   ├── repository/                 # JPA Interfaces for data persistence
+│   ├── model/                      # Core global Database entities and shared schemas
+│   ├── service/                    # Feature-driven service modules
+│   │   ├── repositoryindexer/      # Feature Module: Git Repository Indexer
+│   │   │   ├── api/                # DTOs, request payloads, and response contracts
+│   │   │   ├── entity/             # Feature-specific mapping entities, internal only DTOs
+│   │   │   ├── controller          # REST Controller endpoints exposing Feature APIs
+│   │   │   └── featureservice      # Feature-specific business logic implementation
+│   └── mockresponse/               # CRITICAL: External Isolated Domain Dependencies
+│       ├── domain2/                # Resource Allocation Mock Services & DTOs
+└── src/main/resources/
+    └── mockresponse/               # Raw JSON data structures mimicking external systems
+        ├── domain2/                # Example: Mock JSON schemas for resource allocation & help desk hub 
+```
 
 ---
 
