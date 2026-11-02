@@ -4,7 +4,7 @@
 
 ## AI AGENT BUILD: Jackson pretty-print startup fix
 
-- Version: uncommitted working-tree change.
+- Commit: `9fe3c66cac586954501bf6dd6c683c5dce2896fb` (`AI AGENT BUILD: Spring properties configuration`).
 - Removed the unsupported `spring.jackson.generator.write-end-of-line-after-value` setting from the user's `application.properties`; retained their `spring.jackson.serialization.indent-output=true` setting. No functional test edits.
 - Converted the H2 Spring test profile from `application-test.yml` to equivalent `application-test.properties`; non-Spring YAML remains unchanged.
 - Changed hunk: the deleted unsupported generator property was agent-modified; the remaining properties and existing formatting configuration are unchanged.
