@@ -2,6 +2,20 @@
  AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
 ---
 
+## AI AGENT BUILD: IDE database without PostgreSQL
+
+- Working-tree change (uncommitted).
+- Configured the default `dev` profile to use a persistent H2 database under `build/dev-db/`, moved H2 onto the
+  application runtime classpath, and explicitly selected the existing PostgreSQL datasource profile in Docker Compose.
+- Documented IDE startup, local database persistence/cleanup, and direct PostgreSQL usage in `README.md`.
+- Changed hunks in `src/main/resources/application.properties`, `src/main/resources/application-dev.properties`,
+  `build.gradle`, `docker-compose.yml`, `README.md`, `gradle.lockfile`, and this history entry were agent-authored;
+  unchanged lines retain their prior attribution.
+- No Java source files changed; no source-file contribution headers or source-line snapshots were required.
+- Verification: `.\gradlew.bat clean build --no-daemon` passed; `docker compose config --quiet` passed; default-profile
+  `bootRun` started with H2 and responded over HTTP without PostgreSQL; an inserted record was retrieved after an
+  application restart; `.\gradlew.bat clean --no-daemon` removed the H2 database files.
+
 ## AI AGENT BUILD: Jackson pretty-print startup fix
 
 - Commit: `9fe3c66cac586954501bf6dd6c683c5dce2896fb` (`AI AGENT BUILD: Spring properties configuration`).

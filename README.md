@@ -28,6 +28,12 @@ service, JPA repository, and an isolated H2 database:
 
 On macOS/Linux, run `./gradlew clean build`.
 
+## Run locally from the IDE
+
+The default `dev` profile uses a file-backed H2 database at `build/dev-db/projectportal`. No database service is
+required, and data remains available after application restarts. Stop the application and run `.\gradlew.bat clean`
+to remove the local database files.
+
 ## Run with PostgreSQL
 
 Start the application and PostgreSQL database:
@@ -41,9 +47,10 @@ Fetch it with `GET /api/v1/records/{id}`. Compose stores PostgreSQL data in a na
 local development only; set `DB_NAME`, `DB_USERNAME`, and `DB_PASSWORD` in the environment or a local `.env` file
 before exposing the service beyond a developer machine.
 
-The application also supports local execution with PostgreSQL at
-`jdbc:postgresql://localhost:5432/projectportal`. Override `SPRING_DATASOURCE_URL`, `DB_USERNAME`, and `DB_PASSWORD`
-as needed. Flyway applies migrations automatically and Hibernate validates the schema at startup.
+Docker Compose selects the `postgres` profile automatically. To run the application directly against PostgreSQL,
+start PostgreSQL on `localhost:5432` and activate that profile (for example, set `SPRING_PROFILES_ACTIVE=postgres`
+before launching the IDE run configuration). Override `SPRING_DATASOURCE_URL`, `DB_USERNAME`, and `DB_PASSWORD` as
+needed. Flyway applies migrations automatically and Hibernate validates the schema at startup.
 
 ## Dependency lockfile
 
