@@ -4,7 +4,7 @@
     <module name="project-portal.main" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.bu.*" />
+        <option name="PATTERN" value="com.bu.SampleUnitTest" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
