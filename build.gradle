@@ -2,6 +2,18 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.sonarqube' version '7.5.0.8588'
+}
+
+def sonarProjectProperties = new Properties()
+file('sonar-project.properties').withInputStream { sonarProjectProperties.load(it) }
+
+sonar {
+    properties {
+        sonarProjectProperties.each { key, value ->
+            property key.toString(), value.toString()
+        }
+    }
 }
 
 java {

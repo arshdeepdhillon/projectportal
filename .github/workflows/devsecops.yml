@@ -1,4 +1,4 @@
-# Agent Contribution Weight: [80%] Agent Generated / [20%] Human Refactored
+# Agent Contribution Weight: [78%] Agent Generated / [22%] Human Refactored
 name: DevSecOps
 
 on:
@@ -18,3 +18,8 @@ jobs:
 
   call-build-and-scan:
     uses: ./.github/workflows/job-build-and-scan.yml
+
+  call-sonarqube:
+    uses: ./.github/workflows/job-sonarqube.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

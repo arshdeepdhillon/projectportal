@@ -2,6 +2,26 @@
  AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
 ---
 
+## AI AGENT BUILD: SonarQube Cloud Scan
+
+- Working-tree change (uncommitted).
+- Compared the workflow refactor with `master` (the repository's main branch): Semgrep and build/Trivy were
+  extracted into callable workflows. Added a reusable SonarQube Cloud scan workflow, called it from `devsecops.yml`,
+  and configured the Gradle SonarScanner plugin to load project settings from `sonar-project.properties`.
+- The scan checks out full history, sets up Azul Zulu Java 17, and runs `./gradlew build sonar --no-daemon` with
+  `SONAR_TOKEN`. `sonar.qualitygate.wait=true` makes a failing SonarQube Cloud quality gate fail the scan job.
+- Agent-authored hunks: SonarScanner plugin/property loading in `build.gradle`, Sonar workflow and its caller in
+  `.github/workflows/devsecops.yml`, and the quality-gate setting in `sonar-project.properties`. The pre-existing
+  Sonar organization setting was already valid and was retained. No Java application source files changed.
+- Per-file snapshots:
+  - File: `.github/workflows/devsecops.yml` — Agent lines: 14; Human lines: 4; Agent: 78%; Human: 22%
+  - File: `.github/workflows/job-sonarqube.yml` — Agent lines: 26; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `sonar-project.properties` — Agent lines: 1; Human lines: 2; Agent: 33%; Human: 67%
+- Verification: both workflow files parsed as YAML and the reusable-workflow call, required secret, and Gradle scan
+  command were checked. `.\gradlew.bat build sonar --dry-run --no-daemon` and `.\gradlew.bat build --no-daemon`
+  passed with Azul Zulu Java 17; `git diff --check` passed. The remote scan and quality-gate response were not run
+  locally because the Sonar token is available as a GitHub secret.
+
 ## AI AGENT BUILD: User prompt history logging
 
 - Working-tree change (uncommitted).
