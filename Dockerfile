@@ -3,7 +3,7 @@ FROM azul/zulu-openjdk:17 AS builder
 WORKDIR /app
 
 # Copy gradle wrapper and build files first for optimal layer caching
-COPY gradlew settings.gradle build.gradle gradle.lockfile ./
+COPY gradlew settings.gradle build.gradle gradle.lockfile sonar-project.properties ./
 COPY gradle ./gradle
 
 # Normalize the wrapper in case it was checked out with Windows line endings.
