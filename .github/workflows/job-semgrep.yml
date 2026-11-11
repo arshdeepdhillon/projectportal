@@ -17,4 +17,4 @@ jobs:
 
       - name: Run Semgrep
         continue-on-error: true
-        run: semgrep scan --config auto --error . || true
+        run: semgrep scan --config auto .
