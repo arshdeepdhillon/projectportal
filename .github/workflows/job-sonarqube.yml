@@ -13,8 +13,8 @@ jobs:
   sonarqube:
     name: SonarQube Cloud Scan
     runs-on: ubuntu-latest
-    # SonarCould free plan analyzes only the main branch
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # SonarCloud free plan analyzes only the master branch
+    if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
     steps:
       - name: Check out source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
