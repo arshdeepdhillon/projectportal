@@ -17,6 +17,7 @@ import java.util.UUID;
 @Service
 @Transactional
 public class PersistenceRecordService {
+    private final String m_sonarTestWarning = "unused field for Sonar rule test";
     private final PersistenceRecordRepository repository;
 
     public PersistenceRecordService(PersistenceRecordRepository repository) {
