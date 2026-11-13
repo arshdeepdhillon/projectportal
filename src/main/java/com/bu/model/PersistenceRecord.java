@@ -17,7 +17,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "persistence_records")
-public class PersistenceRecord {
+public class PersistenceRecord
+{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -27,18 +28,22 @@ public class PersistenceRecord {
     @Column(name = "record_value", nullable = false)
     private String value;
 
-    protected PersistenceRecord() {
+    protected PersistenceRecord()
+    {
     }
 
-    public PersistenceRecord(String value) {
+    public PersistenceRecord( String value )
+    {
         this.value = value;
     }
 
-    public UUID getId() {
+    public UUID getId()
+    {
         return id;
     }
 
-    public String getValue() {
+    public String getValue()
+    {
         return value;
     }
 }

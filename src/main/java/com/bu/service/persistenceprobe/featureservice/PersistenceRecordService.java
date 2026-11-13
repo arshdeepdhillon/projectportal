@@ -16,22 +16,25 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class PersistenceRecordService {
-    //private final String m_sonarTestWarning = "unused field for Sonar rule test";
+public class PersistenceRecordService
+{
     private final PersistenceRecordRepository repository;
 
-    public PersistenceRecordService(PersistenceRecordRepository repository) {
+    public PersistenceRecordService( PersistenceRecordRepository repository )
+    {
         this.repository = repository;
     }
 
-    public PersistenceRecord save(String value) {
-        return repository.save(new PersistenceRecord(value));
+    public PersistenceRecord save( String value )
+    {
+        return repository.save( new PersistenceRecord( value ) );
     }
 
     @Transactional(readOnly = true)
-    public PersistenceRecord getById(UUID id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Record not found"));
+    public PersistenceRecord getById( UUID id )
+    {
+        return repository.findById( id )
+                .orElseThrow( () -> new ResponseStatusException( HttpStatus.NOT_FOUND, "Record not found" ) );
     }
 
     public List<PersistenceRecord> getAll()
