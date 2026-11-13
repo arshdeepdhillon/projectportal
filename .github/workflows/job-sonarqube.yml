@@ -31,3 +31,20 @@ jobs:
         run: ./gradlew build sonar --no-daemon
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Publish SonarCloud analysis summary
+        if: success()
+        shell: bash
+        run: |
+          project_key="$(sed -n 's/^sonar.projectKey=//p' sonar-project.properties)"
+          if [[ -z "$project_key" ]]; then
+            echo "::error::sonar.projectKey is missing from sonar-project.properties"
+            exit 1
+          fi
+
+          {
+            printf '## SonarCloud analysis\n\n'
+            printf 'The `sonar` task completed successfully for `%s`.\n\n' "$project_key"
+            printf -- '- Commit: [`%s`](%s/%s/commit/%s)\n' "$GITHUB_SHA" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_SHA"
+            printf -- '- Dashboard: [SonarCloud project overview](https://sonarcloud.io/project/overview?id=%s)\n' "$project_key"
+          } >> "$GITHUB_STEP_SUMMARY"
