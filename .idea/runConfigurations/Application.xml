@@ -2,6 +2,7 @@
   <configuration default="false" name="Application" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="com.bu.Application" />
     <module name="project-portal.main" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=dev" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.bu.SampleUnitTest" />
