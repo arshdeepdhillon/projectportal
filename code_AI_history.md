@@ -118,6 +118,58 @@
 - Updated `Agent_environment.md` to prominently identify Azul Zulu JDK 17 as the user's installed Java runtime and configured build toolchain.
 - Human modifications: none reported for this change.
 
+## AI AGENT BUILD: Domain 1 project and artifact service
+
+- Working-tree change (uncommitted).
+- Replaced the single-value persistence probe with the master-spec project lifecycle and nested repository, manuscript,
+  video, academic-unit, manuscript-file, search, soft-delete, and purge APIs. Added local `dev`/`test` academic-unit
+  fixtures, epoch-millisecond timestamps, database-backed manuscript file data, and an HTTP-level functional test.
+- Updated `spec.md` to the master design and the user's clarified happy-path decisions. Updated the README and removed
+  the implicit `dev` profile. Preserved Flyway V1 and added V2 to replace the probe table with the Domain 1 schema,
+  avoiding a V1 checksum change for existing local databases. Removed the unused validation starter and its lock entries.
+- Agent-authored source hunks: all new Domain 1 API, entity, repository, controller, service, and fixture-loader code;
+  all new lines in the functional test except its retained class declaration; and the V2 migration. Removed the
+  persistence probe source files and its unit test. The unchanged V1 migration and `Application.java` were not modified.
+- Follow-up working-tree hunk in `ArtifactService.java`: added explicit checked-`IOException` rollback behavior for
+  manuscript upload and ZIP download, and changed the file-download wrapper from a record to a class to avoid record
+  array-identity equality semantics. These lines are agent-authored.
+- Per-file snapshots (contribution header excluded; retained substantive logical lines):
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/Artifact.java` — Agent lines: 89; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/ArtifactType.java` — Agent lines: 27; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/AcademicUnit.java` — Agent lines: 52; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/Project.java` — Agent lines: 62; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/ProjectMember.java` — Agent lines: 38; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/ManuscriptFile.java` — Agent lines: 46; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/ManuscriptFileData.java` — Agent lines: 36; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/ProjectApi.java` — Agent lines: 42; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/ArtifactApi.java` — Agent lines: 93; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/AcademicUnitApi.java` — Agent lines: 14; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/controller/ProjectController.java` — Agent lines: 75; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/controller/ArtifactController.java` — Agent lines: 186; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/controller/AcademicUnitController.java` — Agent lines: 33; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/ProjectService.java` — Agent lines: 195; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/ArtifactService.java` — Agent lines: 305; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/AcademicUnitService.java` — Agent lines: 36; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/config/AcademicUnitFixtureLoader.java` — Agent lines: 59; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/repository/ProjectRepository.java` — Agent lines: 11; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/repository/ArtifactRepository.java` — Agent lines: 23; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/repository/AcademicUnitRepository.java` — Agent lines: 10; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/SampleFunctionalTest.java` — Agent lines: 328; Human lines: 1; Agent: 100%; Human: 0%
+  - File: `src/main/resources/db/migration/V2__create_project_artifact_catalog.sql` — Agent lines: 71; Human lines: 0; Agent: 100%; Human: 0%
+- Deleted source snapshots:
+  - File: `src/main/java/com/bu/model/PersistenceRecord.java` — Agent lines: 0; Human lines: 0; Agent: 0%; Human: 100%
+  - File: `src/main/java/com/bu/repository/PersistenceRecordRepository.java` — Agent lines: 0; Human lines: 0; Agent: 0%; Human: 100%
+  - File: `src/main/java/com/bu/service/persistenceprobe/controller/PersistenceRecordController.java` — Agent lines: 0; Human lines: 0; Agent: 0%; Human: 100%
+  - File: `src/main/java/com/bu/service/persistenceprobe/featureservice/PersistenceRecordService.java` — Agent lines: 0; Human lines: 0; Agent: 0%; Human: 100%
+  - File: `src/test/java/com/bu/SampleUnitTest.java` — Agent lines: 0; Human lines: 0; Agent: 0%; Human: 100%
+- `Prompt_test_log.md` now contains Prompt 7 with the available exact user request and clarification/choice responses.
+- Verification status: IntelliJ diagnostics reported no compile errors in the implementation and functional test; a
+  non-blocking inspection warning remains on the array-valued file-download content. Direct Gradle execution was blocked
+  because the command runner required interactive approval and no user response was available; the alternate test-runner
+  attempt failed before execution because its model was unsupported. The build and functional test therefore remain
+  unverified.
+- Human modifications: none reported.
+
 ## AI AGENT BUILD: Agent environment draft
 
 - Updated `Agent_environment.md` to document the current Copilot runtime and version, Auto model-selection mode,

@@ -675,3 +675,180 @@ Assistant clarification: Should SonarQube Cloud findings/quality-gate failures b
 *User response: Enforce the quality gate*
 
 Response: Added SonarQube Cloud analysis as a reusable Gradle scanner workflow called from `devsecops.yml`. The configured quality gate blocks the scan job when it fails.
+
+---
+
+### Prompt 7 **A2 Domain 1 Happy-Path Service**
+
+*User prompt: Lets build the core features purely functional, happy-path approach of the master specification (C:
+\Users\arsh\ProjectPortalDomainServices.md) , deliberately omitting any mention of security, input validation or
+encryption. Update our spec as that takes precedence.*
+
+*User response: project*
+
+*User response: all*
+
+*User response: local_reference*
+
+*User response: database*
+
+*User response: id_and_role*
+
+*User response: master_only*
+
+*User response: project_fields_only*
+
+*User response: use soft delete, by deleting the field deleted to 1. An internal endpoint called "/projects/cleanup"
+actually deleted projects marked with deleted=1 and its data*
+
+*User response: Hit it immediately from GIT and search. also rename "projects/cleanup" to "projects/purge"*
+
+*User response: post*
+
+*User response: Soft-delete the artifact until project purge. This way we can rollback artifacts if such feature comes*
+
+*User response: hide*
+
+*User response: sha256*
+
+*User response: Provide a filter object,which contains a timeRange object whcih has createdFrom,createdTo fields*
+
+*User response: it should be json request object*
+
+*User response: follow master*
+
+*User response: and*
+
+*User response: all_artifact_metadata*
+
+*User response: any*
+
+*User response: string*
+
+*User response: project_fields*
+
+*User response: one_current*
+
+*User response: file_only*
+
+*User response: dotted*
+
+*User response: omit*
+
+*User response: project_payload*
+
+*User response: replace*
+
+*User response: names*
+
+*User response: inclusive*
+
+*User response: defer*
+
+*User response: application.properties sets spring.profiles.default=dev. If production starts without a profile, the dev
+profile is active and your mock data loads. A safer design fails closed: no default profile, or a production default,
+with dev and test enabled explicitly.*
+
+*User response: none*
+
+*User response: filename_media_type*
+
+*User response: separate_record*
+
+*User response: count*
+
+*User response: dev_test_only*
+
+*User response: remove the probe as a scaffold. Also this project isn't release, so migrations files can
+edited/deleted/updated*
+
+*User response: defer*
+
+*User response: string*
+
+*User response: happy_only*
+
+*User response: scalar_only*
+
+*User response: structured publisher object*
+
+*User response: name, venue*
+
+*User response: type_specific*
+
+*User response: changed_only*
+
+*User response: deployment_data*
+
+*User prompt: save the plan so can resume*
+
+*User prompt: lets continue from where left*
+
+*User response: keep*
+
+*User response: If the master spec clearly specifies a design, then it takes precedence. if the master spec doesn't
+specify it, only then ask me for clarificaiton*
+
+*User response: short_names*
+
+*User response: Just to refresh. we are to build purely functional, happy-path approach to build the standardized
+service. build the core features of the master specification (C:\Users\arsh\Downloads\ProjectPortalDomainServices.md),
+deliberately omitting any mention of security, input validation, or encryption.*
+
+*User response: keep*
+
+*User response: conventional*
+
+*User response: multipart*
+
+*User response: artifact_directory*
+
+*User response: active_with_files*
+
+*User response: string*
+
+*User response: active_only*
+
+*User response: Can one person have multiple roles on same project? If so, give examples*
+
+*User response: multiple*
+
+*User response: independent*
+
+*User response: separate*
+
+*User response: array*
+
+*User response: Bare JSON array. Also lets not introduce pagination yet. Keep it out since master spec doesn't specify
+it*
+
+*User response: omit_all*
+
+*User response: If the master spec doesn't specify providing ability of multiple artifact_types then keep it to one
+only*
+
+*User response: distinguish*
+
+*User response: lets make the endpoints work in epoch UTC only*
+
+*User response: milliseconds*
+
+*User response: milliseconds*
+
+*User response: artifactType*
+
+*User response: existing*
+
+*User response: server*
+
+*User response: internal*
+
+*User response: array*
+
+*User response: updated_at_only*
+
+*User response: omit*
+
+Response: Replaced the persistence probe with the Domain 1 project/artifact service, updated the functional spec, and
+added a full HTTP-level functional test covering project revision behavior, artifact CRUD, manuscript file
+storage/replacement/download/delete, ZIP export, search, soft deletion, and purge.
