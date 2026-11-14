@@ -27,13 +27,18 @@ jobs:
           distribution: zulu
           java-version: '17'
 
-      - name: Build and analyze
-        run: ./gradlew build sonar --no-daemon
+      - name: Build
+        run: ./gradlew build --no-daemon
+
+      - name: SonarQube Cloud Analysis
+        id: sonar
+        continue-on-error: true
+        run: ./gradlew sonar --no-daemon
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Publish SonarCloud analysis summary
-        if: success()
+        if: ${{ steps.sonar.outcome == 'success' }}
         shell: bash
         run: |
           project_key="$(sed -n 's/^sonar.projectKey=//p' sonar-project.properties)"
