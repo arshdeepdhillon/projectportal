@@ -179,8 +179,10 @@ public class ArtifactService
                 ArtifactType.MANUSCRIPTS,
                 ACTIVE
         );
-        try ( ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-              ZipOutputStream zip = new ZipOutputStream( bytes ) )
+        try (
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                ZipOutputStream zip = new ZipOutputStream( bytes )
+        )
         {
             for ( Artifact manuscript : manuscripts )
             {
@@ -301,8 +303,7 @@ public class ArtifactService
         try
         {
             return HexFormat.of().formatHex( MessageDigest.getInstance( "SHA-256" ).digest( content ) );
-        }
-        catch ( NoSuchAlgorithmException exception )
+        } catch ( NoSuchAlgorithmException exception )
         {
             throw new IllegalStateException( exception );
         }

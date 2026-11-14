@@ -130,8 +130,8 @@ public class ProjectService
 
     private boolean matchesTimeRange( Project project, Long createdFrom, Long createdTo )
     {
-        return ( createdFrom == null || project.getCreatedAt() >= createdFrom )
-                && ( createdTo == null || project.getCreatedAt() <= createdTo );
+        return (createdFrom == null || project.getCreatedAt() >= createdFrom)
+                && (createdTo == null || project.getCreatedAt() <= createdTo);
     }
 
     private boolean matchesUnit( Project project, UUID id, AcademicUnit.Type type )
@@ -178,9 +178,9 @@ public class ProjectService
                 || artifact.getAuthors().stream().anyMatch( author -> contains( author, keyword ) )
                 || artifact.getKeywords().stream().anyMatch( value -> contains( value, keyword ) )
                 || artifact.getManuscriptFile() != null
-                && ( contains( artifact.getManuscriptFile().getSha256(), keyword )
+                && (contains( artifact.getManuscriptFile().getSha256(), keyword )
                 || contains( artifact.getManuscriptFile().getOriginalFilename(), keyword )
-                || contains( artifact.getManuscriptFile().getMediaType(), keyword ) );
+                || contains( artifact.getManuscriptFile().getMediaType(), keyword ));
     }
 
     private boolean contains( Object value, String keyword )

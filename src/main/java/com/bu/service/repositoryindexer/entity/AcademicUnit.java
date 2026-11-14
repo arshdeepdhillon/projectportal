@@ -23,29 +23,17 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AcademicUnit
 {
-    public enum Type
-    {
-        LAB,
-        DEPARTMENT,
-        COURSE
-    }
-
     @Id
     private UUID id;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "unit_type", nullable = false)
     private Type type;
-
     @Column(name = "name")
     private String name;
-
     @Column(name = "code")
     private String code;
-
     @Column(name = "course_code")
     private String courseCode;
-
     @Column(name = "course_name")
     private String courseName;
 
@@ -63,5 +51,12 @@ public class AcademicUnit
         this.courseCode = courseCode;
         this.courseName = courseName;
         this.type = Type.COURSE;
+    }
+
+    public enum Type
+    {
+        LAB,
+        DEPARTMENT,
+        COURSE
     }
 }

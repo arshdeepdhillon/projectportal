@@ -165,6 +165,7 @@ public abstract class Artifact {
 ```
 
 #### Subclass: `GitRepositoryArtifact.java`
+
 ```java
 package com.academic.catalog.entity;
 
@@ -176,7 +177,8 @@ import lombok.Setter;
 @DiscriminatorValue("GIT_REPOSITORY")
 @Getter
 @Setter
-public class GitRepositoryArtifact extends Artifact {
+public class GitRepositoryArtifact extends Artifact
+{
 
     @Column(name = "repo_url", nullable = false)
     private String repoUrl;
@@ -199,19 +201,22 @@ public class GitRepositoryArtifact extends Artifact {
 ```
 
 #### Subclass: `ManuscriptArtifact.java`
+
 ```java
 package com.academic.catalog.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDate;
 
 @Entity
 @DiscriminatorValue("MANUSCRIPT")
 @Getter
 @Setter
-public class ManuscriptArtifact extends Artifact {
+public class ManuscriptArtifact extends Artifact
+{
 
     @Column(name = "doi", unique = true)
     private String doi;
@@ -231,6 +236,7 @@ public class ManuscriptArtifact extends Artifact {
 ```
 
 #### Subclass: `VideoPresentationArtifact.java`
+
 ```java
 package com.academic.catalog.entity;
 
@@ -242,7 +248,8 @@ import lombok.Setter;
 @DiscriminatorValue("VIDEO_PRESENTATION")
 @Getter
 @Setter
-public class VideoPresentationArtifact extends Artifact {
+public class VideoPresentationArtifact extends Artifact
+{
 
     @Column(name = "video_url", nullable = false)
     private String videoUrl;
@@ -266,13 +273,15 @@ package com.academic.catalog.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.UUID;
 
 @Entity
 @Table(name = "academic_labs")
 @Getter
 @Setter
-public class AcademicLab {
+public class AcademicLab
+{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -288,7 +297,8 @@ public class AcademicLab {
 @Table(name = "department_programs")
 @Getter
 @Setter
-public class DepartmentProgram {
+public class DepartmentProgram
+{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -304,7 +314,8 @@ public class DepartmentProgram {
 @Table(name = "course_affiliations")
 @Getter
 @Setter
-public class CourseAffiliation {
+public class CourseAffiliation
+{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -323,100 +334,205 @@ public class CourseAffiliation {
 
 ### 4.1 Endpoint Matrix
 
-| Method | Endpoint | Description | Query Parameters / Filters |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/artifacts` | Search & list all artifacts (paginated) | `type`, `labId`, `departmentId`, `courseId`, `search`, `page`, `size`, `sort` |
-| `GET` | `/api/v1/artifacts/{id}` | Fetch a single artifact by UUID | N/A |
-| `POST` | `/api/v1/artifacts` | Create a new artifact profile | N/A |
-| `PUT` | `/api/v1/artifacts/{id}` | Update an existing artifact | N/A |
-| `DELETE` | `/api/v1/artifacts/{id}` | Delete an artifact by UUID | N/A |
-| `GET` | `/api/v1/labs` | List academic labs | `page`, `size`, `sort` |
-| `GET` | `/api/v1/departments` | List department programs | `page`, `size`, `sort` |
-| `GET` | `/api/v1/courses` | List course affiliations | `page`, `size`, `sort` |
+| Method   | Endpoint                 | Description                             | Query Parameters / Filters                                                    |
+|:---------|:-------------------------|:----------------------------------------|:------------------------------------------------------------------------------|
+| `GET`    | `/api/v1/artifacts`      | Search & list all artifacts (paginated) | `type`, `labId`, `departmentId`, `courseId`, `search`, `page`, `size`, `sort` |
+| `GET`    | `/api/v1/artifacts/{id}` | Fetch a single artifact by UUID         | N/A                                                                           |
+| `POST`   | `/api/v1/artifacts`      | Create a new artifact profile           | N/A                                                                           |
+| `PUT`    | `/api/v1/artifacts/{id}` | Update an existing artifact             | N/A                                                                           |
+| `DELETE` | `/api/v1/artifacts/{id}` | Delete an artifact by UUID              | N/A                                                                           |
+| `GET`    | `/api/v1/labs`           | List academic labs                      | `page`, `size`, `sort`                                                        |
+| `GET`    | `/api/v1/departments`    | List department programs                | `page`, `size`, `sort`                                                        |
+| `GET`    | `/api/v1/courses`        | List course affiliations                | `page`, `size`, `sort`                                                        |
 
 ---
 
 ## 5. JSON Schemas
 
 ### 5.1 Standard Paginated Response Envelope Schema (`paginated-response.json`)
+
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "PaginatedResponse",
   "type": "object",
-  "required": ["content", "page", "size", "totalElements", "totalPages", "last"],
+  "required": [
+    "content",
+    "page",
+    "size",
+    "totalElements",
+    "totalPages",
+    "last"
+  ],
   "properties": {
     "content": {
       "type": "array",
-      "items": { "type": "object" }
+      "items": {
+        "type": "object"
+      }
     },
-    "page": { "type": "integer", "minimum": 0 },
-    "size": { "type": "integer", "minimum": 1 },
-    "totalElements": { "type": "integer", "minimum": 0 },
-    "totalPages": { "type": "integer", "minimum": 0 },
-    "last": { "type": "boolean" }
+    "page": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "totalElements": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "totalPages": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "last": {
+      "type": "boolean"
+    }
   }
 }
 ```
 
 ### 5.2 Artifact Request/Response Payload Schema (`artifact-dto.json`)
+
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "ArtifactDTO",
   "type": "object",
-  "required": ["id", "title", "artifactType", "createdAt", "updatedAt"],
+  "required": [
+    "id",
+    "title",
+    "artifactType",
+    "createdAt",
+    "updatedAt"
+  ],
   "properties": {
-    "id": { "type": "string", "format": "uuid" },
-    "title": { "type": "string", "maxLength": 255 },
-    "description": { "type": ["string", "null"] },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "artifactType": {
       "type": "string",
-      "enum": ["GIT_REPOSITORY", "MANUSCRIPT", "VIDEO_PRESENTATION"]
+      "enum": [
+        "GIT_REPOSITORY",
+        "MANUSCRIPT",
+        "VIDEO_PRESENTATION"
+      ]
     },
-    "createdAt": { "type": "string", "format": "date-time" },
-    "updatedAt": { "type": "string", "format": "date-time" },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
     "gitDetails": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
-        "repoUrl": { "type": "string", "format": "uri" },
-        "primaryLanguage": { "type": "string" },
-        "starCount": { "type": "integer" },
-        "forkCount": { "type": "integer" },
-        "licenseName": { "type": "string" },
-        "defaultBranch": { "type": "string" }
+        "repoUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "primaryLanguage": {
+          "type": "string"
+        },
+        "starCount": {
+          "type": "integer"
+        },
+        "forkCount": {
+          "type": "integer"
+        },
+        "licenseName": {
+          "type": "string"
+        },
+        "defaultBranch": {
+          "type": "string"
+        }
       }
     },
     "manuscriptDetails": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
-        "doi": { "type": "string" },
-        "publicationVenue": { "type": "string" },
-        "publicationDate": { "type": "string", "format": "date" },
-        "documentPdfUrl": { "type": "string", "format": "uri" },
-        "citationCount": { "type": "integer" }
+        "doi": {
+          "type": "string"
+        },
+        "publicationVenue": {
+          "type": "string"
+        },
+        "publicationDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "documentPdfUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "citationCount": {
+          "type": "integer"
+        }
       }
     },
     "videoDetails": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
-        "videoUrl": { "type": "string", "format": "uri" },
-        "platformName": { "type": "string" },
-        "durationSeconds": { "type": "integer" },
-        "thumbnailUrl": { "type": "string", "format": "uri" }
+        "videoUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "platformName": {
+          "type": "string"
+        },
+        "durationSeconds": {
+          "type": "integer"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "format": "uri"
+        }
       }
     },
     "labIds": {
       "type": "array",
-      "items": { "type": "string", "format": "uuid" }
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
     },
     "departmentIds": {
       "type": "array",
-      "items": { "type": "string", "format": "uuid" }
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
     },
     "courseIds": {
       "type": "array",
-      "items": { "type": "string", "format": "uuid" }
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
     }
   }
 }
@@ -426,7 +542,8 @@ public class CourseAffiliation {
 
 ## 6. Static Enterprise Mock Data Structure
 
-Below is the local JSON seed data fixture structure (`src/main/resources/mocks/artifacts-fixture.json`), utilized during integration testing and developer static mocking mode.
+Below is the local JSON seed data fixture structure (`src/main/resources/mocks/artifacts-fixture.json`), utilized during
+integration testing and developer static mocking mode.
 
 ```json
 {
@@ -668,13 +785,16 @@ Exact prompts from older conversations not present in the accessible session wer
 
 ### Prompt 6 **SonarQube Cloud Scan Job**
 
-*User prompt: [[PLAN]] /plan compare the changes against main branch to understand what jobs have been refactored into their own yml files. I have added sonar-project.properties and now need to add SonarQube Cloud Scan job*
+*User prompt: [[PLAN]] /plan compare the changes against main branch to understand what jobs have been refactored into
+their own yml files. I have added sonar-project.properties and now need to add SonarQube Cloud Scan job*
 
-Assistant clarification: Should SonarQube Cloud findings/quality-gate failures block the `devsecops` workflow, or should the new scan initially be report-only like the existing Semgrep and Trivy scans?
+Assistant clarification: Should SonarQube Cloud findings/quality-gate failures block the `devsecops` workflow, or should
+the new scan initially be report-only like the existing Semgrep and Trivy scans?
 
 *User response: Enforce the quality gate*
 
-Response: Added SonarQube Cloud analysis as a reusable Gradle scanner workflow called from `devsecops.yml`. The configured quality gate blocks the scan job when it fails.
+Response: Added SonarQube Cloud analysis as a reusable Gradle scanner workflow called from `devsecops.yml`. The
+configured quality gate blocks the scan job when it fails.
 
 ---
 

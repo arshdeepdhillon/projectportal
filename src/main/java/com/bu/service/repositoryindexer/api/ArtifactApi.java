@@ -15,6 +15,15 @@ public final class ArtifactApi
     {
     }
 
+    public interface ArtifactResponse
+    {
+        UUID id();
+
+        UUID projectId();
+
+        String artifactType();
+    }
+
     public record GitRepositoryRequest(
             String repoUrl,
             String targetBranch,
@@ -59,15 +68,6 @@ public final class ArtifactApi
             String mediaType
     )
     {
-    }
-
-    public interface ArtifactResponse
-    {
-        UUID id();
-
-        UUID projectId();
-
-        String artifactType();
     }
 
     public record GitRepositoryResponse(

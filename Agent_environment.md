@@ -90,14 +90,14 @@ profile activation mechanism are not specified.
 
 ### Current repository build configuration
 
-| Parameter                               | Current value                     | Source                                                                       |
-|-----------------------------------------|-----------------------------------|------------------------------------------------------------------------------|
-| Build system                            | Gradle wrapper                    | `gradlew`, `build.gradle`                                                    |
-| Gradle wrapper distribution             | Gradle 9.6.0 binary distribution  | `gradle/wrapper/gradle-wrapper.properties`                                   |
-| Gradle plugins                          | Java plugin                       | `build.gradle`                                                               |
-| Project group / version                 | `com.bu` / `1.0-SNAPSHOT`         | `build.gradle`                                                               |
-| Java toolchain                            | Azul Zulu JDK 17                  | `build.gradle` selects Java 17 and the Azul vendor for compilation and tests. |
-| Spring Boot plugin or dependencies      | Not declared in the current build | `build.gradle`                                                               |
+| Parameter                          | Current value                     | Source                                                                        |
+|------------------------------------|-----------------------------------|-------------------------------------------------------------------------------|
+| Build system                       | Gradle wrapper                    | `gradlew`, `build.gradle`                                                     |
+| Gradle wrapper distribution        | Gradle 9.6.0 binary distribution  | `gradle/wrapper/gradle-wrapper.properties`                                    |
+| Gradle plugins                     | Java plugin                       | `build.gradle`                                                                |
+| Project group / version            | `com.bu` / `1.0-SNAPSHOT`         | `build.gradle`                                                                |
+| Java toolchain                     | Azul Zulu JDK 17                  | `build.gradle` selects Java 17 and the Azul vendor for compilation and tests. |
+| Spring Boot plugin or dependencies | Not declared in the current build | `build.gradle`                                                                |
 
 The Java 17 toolchain is configured in the current build. The Spring Boot 3.2+
 specification target should not be read as proof that the current build
@@ -114,8 +114,8 @@ JPA, validation, or Jackson dependencies.
 | CPU architecture                                      | x86_64                                                             |
 | Container or virtual-machine image                    | Not specified (TBD)                                                |
 | Memory and CPU allocation                             | Not specified (TBD)                                                |
-| Installed Java runtime                                | Azul Zulu JDK 17 (user-reported)                                    |
-| Java build toolchain                                   | Azul vendor, Java 17; configured in `build.gradle`.                 |
+| Installed Java runtime                                | Azul Zulu JDK 17 (user-reported)                                   |
+| Java build toolchain                                  | Azul vendor, Java 17; configured in `build.gradle`.                |
 | Java target for the specified service                 | Java 17 LTS; matches the configured Java toolchain.                |
 | Database engine, address, and credentials reference   | Not specified (TBD); specification requires a relational database. |
 | Required environment variables and their sources      | Not specified (TBD)                                                |

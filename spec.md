@@ -1,5 +1,5 @@
 ---
-AI Contribution Weight: [100%] AI Generated / [0%] Human Refactored
+AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
 ---
 
 # Project Artifact & Repository Indexer — Functional Specification
@@ -92,27 +92,27 @@ All timestamps are UTC epoch milliseconds. Successful reads return `200 OK`. Cre
 the created representation, and a `Location` header. Updates return `200 OK` with the updated representation. Delete
 operations return `204 No Content`.
 
-| Method | Endpoint | Behavior |
-|:--|:--|:--|
-| `GET` | `/api/v1/projects` | Search and list active projects using query parameters. Returns a JSON array. |
-| `POST` | `/api/v1/projects` | Create a project. |
-| `GET` | `/api/v1/projects/{project_id}` | Read one active project. |
-| `PUT` | `/api/v1/projects/{project_id}` | Replace project scalar fields, members, and academic references. |
-| `DELETE` | `/api/v1/projects/{project_id}` | Soft-delete a project. |
-| `POST` | `/api/v1/projects/purge` | Internal maintenance operation: permanently remove deleted projects and their owned data. Returns `200 OK` with `{"purgedProjectCount": 0}`. |
-| `GET` | `/api/v1/projects/{project_id}/artifacts` | List active artifacts for a project as a JSON array. |
-| `GET` | `/api/v1/projects/{project_id}/artifacts/{artifact_type}` | List active artifacts of one type as a JSON array. |
-| `POST` | `/api/v1/projects/{project_id}/artifacts/{artifact_type}` | Create an artifact of the path type. |
-| `GET` | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}` | Read one active artifact. |
-| `PUT` | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}` | Replace the artifact’s type-specific fields. |
-| `DELETE` | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}` | Soft-delete an artifact. |
-| `POST` | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Upload one manuscript file as multipart form data in the `file` part. Returns `201 Created` for the first file and `200 OK` when replacing it, with current file metadata. |
-| `GET` | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Download the current manuscript file using its stored media type and original filename. |
-| `DELETE` | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Remove the current file and its metadata; retain the manuscript. |
-| `GET` | `/api/v1/projects/{project_id}/artifacts/manuscripts/download` | Download a ZIP of current files belonging to active manuscripts. |
-| `GET` | `/api/v1/labs` | List labs as a JSON array. |
-| `GET` | `/api/v1/departments` | List departments as a JSON array. |
-| `GET` | `/api/v1/courses` | List courses as a JSON array. |
+| Method   | Endpoint                                                                 | Behavior                                                                                                                                                                   |
+|:---------|:-------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `GET`    | `/api/v1/projects`                                                       | Search and list active projects using query parameters. Returns a JSON array.                                                                                              |
+| `POST`   | `/api/v1/projects`                                                       | Create a project.                                                                                                                                                          |
+| `GET`    | `/api/v1/projects/{project_id}`                                          | Read one active project.                                                                                                                                                   |
+| `PUT`    | `/api/v1/projects/{project_id}`                                          | Replace project scalar fields, members, and academic references.                                                                                                           |
+| `DELETE` | `/api/v1/projects/{project_id}`                                          | Soft-delete a project.                                                                                                                                                     |
+| `POST`   | `/api/v1/projects/purge`                                                 | Internal maintenance operation: permanently remove deleted projects and their owned data. Returns `200 OK` with `{"purgedProjectCount": 0}`.                               |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts`                                | List active artifacts for a project as a JSON array.                                                                                                                       |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts/{artifact_type}`                | List active artifacts of one type as a JSON array.                                                                                                                         |
+| `POST`   | `/api/v1/projects/{project_id}/artifacts/{artifact_type}`                | Create an artifact of the path type.                                                                                                                                       |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}`  | Read one active artifact.                                                                                                                                                  |
+| `PUT`    | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}`  | Replace the artifact’s type-specific fields.                                                                                                                               |
+| `DELETE` | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}`  | Soft-delete an artifact.                                                                                                                                                   |
+| `POST`   | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Upload one manuscript file as multipart form data in the `file` part. Returns `201 Created` for the first file and `200 OK` when replacing it, with current file metadata. |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Download the current manuscript file using its stored media type and original filename.                                                                                    |
+| `DELETE` | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Remove the current file and its metadata; retain the manuscript.                                                                                                           |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts/manuscripts/download`           | Download a ZIP of current files belonging to active manuscripts.                                                                                                           |
+| `GET`    | `/api/v1/labs`                                                           | List labs as a JSON array.                                                                                                                                                 |
+| `GET`    | `/api/v1/departments`                                                    | List departments as a JSON array.                                                                                                                                          |
+| `GET`    | `/api/v1/courses`                                                        | List courses as a JSON array.                                                                                                                                              |
 
 ZIP entries use `<artifact-UUID>/<original filename>` to keep entries distinct when filenames match. Manuscripts without
 a current file are omitted.
@@ -121,15 +121,15 @@ a current file are omitted.
 
 `GET /api/v1/projects` accepts these optional query parameters:
 
-| Parameter | Meaning |
-|:--|:--|
-| `keyword` | Case-insensitive substring search across project text and artifact metadata. |
-| `labId` | Match projects associated with this lab UUID. |
-| `departmentId` | Match projects associated with this department UUID. |
-| `courseId` | Match projects associated with this course UUID. |
-| `artifactType` | Match projects containing at least one active artifact of the selected type: `repositories`, `manuscripts`, or `videos`. |
-| `timeRange.createdFrom` | Inclusive lower bound on project `createdAt`, as UTC epoch milliseconds. |
-| `timeRange.createdTo` | Inclusive upper bound on project `createdAt`, as UTC epoch milliseconds. |
+| Parameter               | Meaning                                                                                                                  |
+|:------------------------|:-------------------------------------------------------------------------------------------------------------------------|
+| `keyword`               | Case-insensitive substring search across project text and artifact metadata.                                             |
+| `labId`                 | Match projects associated with this lab UUID.                                                                            |
+| `departmentId`          | Match projects associated with this department UUID.                                                                     |
+| `courseId`              | Match projects associated with this course UUID.                                                                         |
+| `artifactType`          | Match projects containing at least one active artifact of the selected type: `repositories`, `manuscripts`, or `videos`. |
+| `timeRange.createdFrom` | Inclusive lower bound on project `createdAt`, as UTC epoch milliseconds.                                                 |
+| `timeRange.createdTo`   | Inclusive upper bound on project `createdAt`, as UTC epoch milliseconds.                                                 |
 
 Each time bound is independently optional. When multiple filter categories are supplied, a project must match every
 supplied category. Keyword search considers active artifacts only. Project search is unpaginated.
@@ -147,12 +147,24 @@ supplied category. Keyword search considers active artifacts only. Project searc
   "updatedAt": 1794594000000,
   "revisionVersion": 1,
   "members": [
-    { "memberId": "member-001", "role": "student" },
-    { "memberId": "member-001", "role": "team lead" }
+    {
+      "memberId": "member-001",
+      "role": "student"
+    },
+    {
+      "memberId": "member-001",
+      "role": "team lead"
+    }
   ],
-  "labIds": ["11111111-1111-1111-1111-111111111111"],
-  "departmentIds": ["33333333-3333-3333-3333-333333333333"],
-  "courseIds": ["55555555-5555-5555-5555-555555555555"]
+  "labIds": [
+    "11111111-1111-1111-1111-111111111111"
+  ],
+  "departmentIds": [
+    "33333333-3333-3333-3333-333333333333"
+  ],
+  "courseIds": [
+    "55555555-5555-5555-5555-555555555555"
+  ]
 }
 ```
 

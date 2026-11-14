@@ -6,9 +6,9 @@ package com.bu.service;
 
 import com.bu.repository.ArtifactRepository;
 import com.bu.repository.ProjectRepository;
+import com.bu.service.repositoryindexer.api.ArtifactApi.GitRepositoryRequest;
 import com.bu.service.repositoryindexer.api.ArtifactApi.ManuscriptRequest;
 import com.bu.service.repositoryindexer.api.ArtifactApi.PublisherRequest;
-import com.bu.service.repositoryindexer.api.ArtifactApi.GitRepositoryRequest;
 import com.bu.service.repositoryindexer.api.ArtifactApi.VideoRequest;
 import com.bu.service.repositoryindexer.api.ProjectApi.MemberRequest;
 import com.bu.service.repositoryindexer.api.ProjectApi.ProjectRequest;
@@ -132,9 +132,9 @@ class SampleFunctionalTest
                 new PublisherRequest( "Campus Press", "Project Symposium" )
         );
         MvcResult artifactCreate = mockMvc.perform( post(
-                                "/api/v1/projects/{projectId}/artifacts/manuscripts",
-                                projectId
-                        )
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts",
+                        projectId
+                )
                         .contentType( MediaType.APPLICATION_JSON )
                         .content( objectMapper.writeValueAsBytes( manuscript ) ) )
                 .andExpect( status().isCreated() )
@@ -152,9 +152,9 @@ class SampleFunctionalTest
                 1794594000000L
         );
         MvcResult repositoryCreate = mockMvc.perform( post(
-                                "/api/v1/projects/{projectId}/artifacts/repositories",
-                                projectId
-                        )
+                        "/api/v1/projects/{projectId}/artifacts/repositories",
+                        projectId
+                )
                         .contentType( MediaType.APPLICATION_JSON )
                         .content( objectMapper.writeValueAsBytes( repository ) ) )
                 .andExpect( status().isCreated() )
@@ -164,10 +164,10 @@ class SampleFunctionalTest
                 repositoryCreate.getResponse().getContentAsByteArray()
         ).get( "id" ).asText() );
         mockMvc.perform( put(
-                                "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
-                                projectId,
-                                repositoryId
-                        )
+                        "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
+                        projectId,
+                        repositoryId
+                )
                         .contentType( MediaType.APPLICATION_JSON )
                         .content( objectMapper.writeValueAsBytes( new GitRepositoryRequest(
                                 repository.repoUrl(),
@@ -195,10 +195,10 @@ class SampleFunctionalTest
                 videoCreate.getResponse().getContentAsByteArray()
         ).get( "id" ).asText() );
         mockMvc.perform( put(
-                                "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
-                                projectId,
-                                videoId
-                        )
+                        "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
+                        projectId,
+                        videoId
+                )
                         .contentType( MediaType.APPLICATION_JSON )
                         .content( objectMapper.writeValueAsBytes( video ) ) )
                 .andExpect( status().isOk() );
@@ -224,10 +224,10 @@ class SampleFunctionalTest
                 fileBytes
         );
         mockMvc.perform( multipart(
-                                "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
-                                projectId,
-                                artifactId
-                        )
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
+                        projectId,
+                        artifactId
+                )
                         .file( upload ) )
                 .andExpect( status().isCreated() )
                 .andExpect( jsonPath( "$.sha256" ).value( sha256( fileBytes ) ) );
@@ -239,10 +239,10 @@ class SampleFunctionalTest
                 fileBytes
         );
         mockMvc.perform( multipart(
-                                "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
-                                projectId,
-                                artifactId
-                        )
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
+                        projectId,
+                        artifactId
+                )
                         .file( replacement ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.originalFilename" ).value( "paper-revised.pdf" ) );
@@ -269,10 +269,10 @@ class SampleFunctionalTest
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.file" ).value( nullValue() ) );
         mockMvc.perform( multipart(
-                                "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
-                                projectId,
-                                artifactId
-                        )
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
+                        projectId,
+                        artifactId
+                )
                         .file( replacement ) )
                 .andExpect( status().isCreated() );
 
@@ -282,9 +282,11 @@ class SampleFunctionalTest
                 ) )
                 .andExpect( status().isOk() )
                 .andReturn();
-        try ( ZipInputStream zip = new ZipInputStream(
-                new ByteArrayInputStream( zipResult.getResponse().getContentAsByteArray() )
-        ) )
+        try (
+                ZipInputStream zip = new ZipInputStream(
+                        new ByteArrayInputStream( zipResult.getResponse().getContentAsByteArray() )
+                )
+        )
         {
             assertThat( zip.getNextEntry().getName() ).isEqualTo( artifactId + "/paper-revised.pdf" );
         }
@@ -317,9 +319,11 @@ class SampleFunctionalTest
                 ) )
                 .andExpect( status().isOk() )
                 .andReturn();
-        try ( ZipInputStream zip = new ZipInputStream(
-                new ByteArrayInputStream( emptyZip.getResponse().getContentAsByteArray() )
-        ) )
+        try (
+                ZipInputStream zip = new ZipInputStream(
+                        new ByteArrayInputStream( emptyZip.getResponse().getContentAsByteArray() )
+                )
+        )
         {
             assertThat( zip.getNextEntry() ).isNull();
         }

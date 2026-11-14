@@ -6,20 +6,15 @@ package com.bu.service.repositoryindexer.entity;
 
 public enum ArtifactType
 {
-    REPOSITORIES("repositories"),
-    MANUSCRIPTS("manuscripts"),
-    VIDEOS("videos");
+    REPOSITORIES( "repositories" ),
+    MANUSCRIPTS( "manuscripts" ),
+    VIDEOS( "videos" );
 
     private final String pathToken;
 
     ArtifactType( String pathToken )
     {
         this.pathToken = pathToken;
-    }
-
-    public String pathToken()
-    {
-        return pathToken;
     }
 
     public static ArtifactType fromPathToken( String pathToken )
@@ -32,5 +27,10 @@ public enum ArtifactType
             }
         }
         throw new IllegalArgumentException( "Unknown artifact type: " + pathToken );
+    }
+
+    public String pathToken()
+    {
+        return pathToken;
     }
 }

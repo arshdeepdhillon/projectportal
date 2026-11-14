@@ -4,8 +4,8 @@ package com.bu.service.repositoryindexer.entity;
  * Agent Contribution Weight: [100%] Agent Generated / [0%] Human Refactored
  */
 
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
