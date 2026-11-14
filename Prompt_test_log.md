@@ -975,6 +975,11 @@ storage/replacement/download/delete, ZIP export, search, soft deletion, and purg
 
 ### Prompt 8 **Focused Functional and Unit Tests**
 
-*User prompt: why did you put all functional test in single SampleFunctionalTest, refactor into classes which focus on a
-class/service. Also create unit tests. Verify both tests pass, and docker builds, run tests against the docker
-containers*
+*User prompt: why did you put all functional test in single SampleFunctionalTest, refactor into classes which foce on a
+class/service. Also create unit tests. Verfiy both tests pass, and docker builds, run tests against the docker
+containsers*
+
+### Prompt 9 **A2 Functional Requirement Coverage Audit**
+
+*User prompt: verify all the functional requiremtns have been implemented and tested via unit and functional: C:
+\Users\arsh\Downloads\ProjectPortalDomainServices.md*

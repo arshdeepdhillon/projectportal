@@ -97,6 +97,17 @@ class ArtifactFunctionalTest
                         ) ) ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.targetBranch" ).value( "release" ) );
+        mockMvc.perform( get(
+                        "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
+                        projectId,
+                        repositoryId
+                ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.repoUrl" ).value( repository.repoUrl() ) )
+                .andExpect( jsonPath( "$.targetBranch" ).value( "release" ) )
+                .andExpect( jsonPath( "$.primaryTechStack" ).value( repository.primaryTechStack() ) )
+                .andExpect( jsonPath( "$.totalCommitCount" ).value( 24 ) )
+                .andExpect( jsonPath( "$.latestCommitTimestamp" ).value( repository.latestCommitTimestamp() ) );
 
         ManuscriptRequest manuscript = new ManuscriptRequest(
                 "Visual Alignment on Edge Devices",
@@ -135,7 +146,13 @@ class ArtifactFunctionalTest
                         manuscriptId
                 ) )
                 .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.file" ).value( org.hamcrest.Matchers.nullValue() ) );
+                .andExpect( jsonPath( "$.title" ).value( manuscript.title() ) )
+                .andExpect( jsonPath( "$.file" ).value( org.hamcrest.Matchers.nullValue() ) )
+                .andExpect( jsonPath( "$.authors.length()" ).value( 2 ) )
+                .andExpect( jsonPath( "$.keywords.length()" ).value( 2 ) )
+                .andExpect( jsonPath( "$.year" ).value( 2026 ) )
+                .andExpect( jsonPath( "$.publisher.name" ).value( "Campus Press" ) )
+                .andExpect( jsonPath( "$.publisher.venue" ).value( "Project Symposium" ) );
 
         VideoRequest video = new VideoRequest(
                 "https://video.example.edu/presentation",
@@ -158,13 +175,35 @@ class ArtifactFunctionalTest
                         ) ) ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.durationMillis" ).value( 300000 ) );
+        mockMvc.perform( get(
+                        "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
+                        projectId,
+                        videoId
+                ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.videoUrl" ).value( video.videoUrl() ) )
+                .andExpect( jsonPath( "$.thumbnailUrl" ).value( video.thumbnailUrl() ) )
+                .andExpect( jsonPath( "$.durationMillis" ).value( 300000 ) )
+                .andExpect( jsonPath( "$.description" ).value( video.description() ) );
 
         mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts", projectId ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 3 ) );
+        mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts/repositories", projectId ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.length()" ).value( 1 ) );
         mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts/manuscripts", projectId ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 1 ) );
+        mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts/videos", projectId ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.length()" ).value( 1 ) );
+        for ( String artifactType : List.of( "repositories", "manuscripts", "videos" ) )
+        {
+            mockMvc.perform( get( "/api/v1/projects" ).param( "artifactType", artifactType ) )
+                    .andExpect( status().isOk() )
+                    .andExpect( jsonPath( "$.length()" ).value( 1 ) );
+        }
         mockMvc.perform( get( "/api/v1/projects" )
                         .param( "keyword", "alignment" )
                         .param( "artifactType", "manuscripts" ) )
@@ -181,6 +220,24 @@ class ArtifactFunctionalTest
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 2 ) );
         mockMvc.perform( get( "/api/v1/projects" ).param( "keyword", "alignment" ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
+        mockMvc.perform( get( "/api/v1/projects" ).param( "artifactType", "manuscripts" ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
+        mockMvc.perform( delete(
+                        "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
+                        projectId,
+                        repositoryId
+                ) )
+                .andExpect( status().isNoContent() );
+        mockMvc.perform( delete(
+                        "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
+                        projectId,
+                        videoId
+                ) )
+                .andExpect( status().isNoContent() );
+        mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts", projectId ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 0 ) );
     }

@@ -283,3 +283,28 @@
   limits, remain marked TBD.
 - Human modifications: none, as confirmed by the user.
 - Verification reported in the originating chat: `git diff --check` passed.
+
+## AI AGENT BUILD: A2 master requirement test coverage
+
+- Working-tree change (uncommitted).
+- Audited the master Domain 1 requirements against `spec.md`, both REST controllers, services, and test suites. Expanded
+  functional tests to cover project response fields and unit associations, both optional time bounds, purge of a project
+  with an artifact, every artifact type's create/list/read/update/delete/search path, and ZIP contents for multiple
+  active files, manuscripts without files, deleted manuscripts, and empty archives.
+- Expanded manuscript checks for the current SHA-256, filename, media type, download headers, and downloaded bytes.
+  Added a `ProjectService` unit test for case-insensitive keyword matching, inclusive/independent time bounds, ANDed
+  academic filters, artifact-type filtering, and response associations.
+- Agent-authored hunks: all additions to `ProjectFunctionalTest.java`, `ArtifactFunctionalTest.java`,
+  `ManuscriptFileFunctionalTest.java`, and `ProjectServiceTest.java`. Headers remain 100% agent-generated.
+- Per-file source snapshots (contribution header excluded; retained substantive logical lines):
+  - File: `src/functionaltest/java/com/bu/service/ProjectFunctionalTest.java` — Agent lines: 174; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ArtifactFunctionalTest.java` — Agent lines: 249; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ManuscriptFileFunctionalTest.java` — Agent lines: 254; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/service/repositoryindexer/featureservice/ProjectServiceTest.java` — Agent lines: 107;
+    Human lines: 0; Agent: 100%; Human: 0%
+- Verification: Docker image build completed `check bootJar` successfully. The suite contains 3 HTTP functional tests
+  and 5 unit tests. `git diff --check` passed; Compose configuration validated. User prompt recorded verbatim as Prompt
+  9.

@@ -9,6 +9,9 @@ import com.bu.repository.ProjectRepository;
 import com.bu.service.repositoryindexer.api.ProjectApi.MemberRequest;
 import com.bu.service.repositoryindexer.api.ProjectApi.ProjectRequest;
 import com.bu.service.repositoryindexer.api.ProjectApi.ProjectResponse;
+import com.bu.service.repositoryindexer.entity.AcademicUnit;
+import com.bu.service.repositoryindexer.entity.Artifact;
+import com.bu.service.repositoryindexer.entity.ArtifactType;
 import com.bu.service.repositoryindexer.entity.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,6 +77,45 @@ class ProjectServiceTest
 
         assertThat( response.revisionVersion() ).isEqualTo( 1 );
         assertThat( response.updatedAt() ).isEqualTo( 100 );
+    }
+
+    @Test
+    void searchAppliesInclusiveOptionalTimeBoundsAndAllAcademicFilters()
+    {
+        UUID labId = UUID.randomUUID();
+        UUID departmentId = UUID.randomUUID();
+        UUID courseId = UUID.randomUUID();
+        Project project = new Project( "Project", "Description", 100 );
+        project.setAcademicUnits( List.of(
+                new AcademicUnit( labId, "Lab", "LAB", AcademicUnit.Type.LAB ),
+                new AcademicUnit( departmentId, "Department", "DEPT", AcademicUnit.Type.DEPARTMENT ),
+                new AcademicUnit( courseId, "COURSE-1", "Course", AcademicUnit.Type.COURSE )
+        ) );
+        Artifact manuscript = new Artifact( project, ArtifactType.MANUSCRIPTS );
+        manuscript.setTitle( "Learning at the edge" );
+        project.getArtifacts().add( manuscript );
+        when( projects.findAllByDeleted( 0 ) ).thenReturn( List.of( project ) );
+
+        List<ProjectResponse> matches = service.search(
+                "EDGE",
+                labId,
+                departmentId,
+                courseId,
+                ArtifactType.MANUSCRIPTS,
+                100L,
+                100L
+        );
+
+        assertThat( matches ).hasSize( 1 );
+        assertThat( matches.get( 0 ).labIds() ).containsExactly( labId );
+        assertThat( matches.get( 0 ).departmentIds() ).containsExactly( departmentId );
+        assertThat( matches.get( 0 ).courseIds() ).containsExactly( courseId );
+        assertThat( service.search( null, UUID.randomUUID(), departmentId, courseId, null, null, null ) )
+                .isEmpty();
+        assertThat( service.search( null, null, null, null, null, 100L, null ) ).hasSize( 1 );
+        assertThat( service.search( null, null, null, null, null, null, 100L ) ).hasSize( 1 );
+        assertThat( service.search( null, null, null, null, null, 101L, null ) ).isEmpty();
+        assertThat( service.search( null, null, null, null, null, null, 99L ) ).isEmpty();
     }
 
     private ProjectRequest request( String title, String description )
