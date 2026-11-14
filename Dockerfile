@@ -13,7 +13,7 @@ RUN sed -i 's/\r$//' ./gradlew \
 
 # Copy source code and build the application jar
 COPY src ./src
-RUN ./gradlew bootJar --no-daemon
+RUN ./gradlew check bootJar --no-daemon
 
 # --- Stage 2: Runtime Phase ---
 FROM eclipse-temurin:17-jre-jammy

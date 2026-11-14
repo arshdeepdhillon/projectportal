@@ -290,8 +290,8 @@ public class ArtifactService
                 artifact.typePathToken(),
                 artifact.getTitle(),
                 artifact.getAbstractText(),
-                artifact.getAuthors(),
-                artifact.getKeywords(),
+                artifact.getAuthors().stream().toList(),
+                artifact.getKeywords().stream().toList(),
                 artifact.getYear(),
                 publisher,
                 fileMetadata

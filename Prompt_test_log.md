@@ -972,3 +972,9 @@ only*
 Response: Replaced the persistence probe with the Domain 1 project/artifact service, updated the functional spec, and
 added a full HTTP-level functional test covering project revision behavior, artifact CRUD, manuscript file
 storage/replacement/download/delete, ZIP export, search, soft deletion, and purge.
+
+### Prompt 8 **Focused Functional and Unit Tests**
+
+*User prompt: why did you put all functional test in single SampleFunctionalTest, refactor into classes which focus on a
+class/service. Also create unit tests. Verify both tests pass, and docker builds, run tests against the docker
+containers*
