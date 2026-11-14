@@ -2,6 +2,9 @@ name: Semgrep Job
 
 on:
   workflow_call:
+    secrets:
+      SEMGREP_APP_TOKEN:
+        required: true
 
 jobs:
   semgrep:
@@ -9,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: semgrep/semgrep@sha256:451b3d875c00dac7ed5db5293e584a07de11449a409c10b3c2d2652f429630b6
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     steps:
       - name: Check out source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -17,4 +22,4 @@ jobs:
 
       - name: Run Semgrep
         continue-on-error: true
-        run: semgrep scan --config p/java --config p/spring --config p/security-audit --config p/owasp-top-ten --config p/secrets .
+        run: semgrep ci
