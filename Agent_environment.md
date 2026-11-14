@@ -2,79 +2,60 @@
  AI Contribution Weight: [ 92% ] AI Generated / [8%] Human Refactored
 ---
 
-# Agent Environment (Draft)
+# Agent Environment
 
-This document records the configuration visible for the current autonomous AI
-developer-agent session in the Project Portal repository, alongside the
-project's documented environment targets. Session and host values are
-observations, not portable repository defaults. Settings that are not exposed
-by the session or documented by the project remain **Not specified (TBD)**.
+This document records configuration visible for the current GitHub Copilot CLI session and the Project Portal
+environment documented in the repository. Session and host facts are observations, not portable repository defaults.
+Values unavailable from the session or repository are marked **Not exposed** or **Not specified** rather than inferred.
 
 ## 1. Agent runtime
 
-The current session is running through GitHub Copilot. The repository itself
-does not configure an agent runtime; session facts below describe this
-environment only.
-
-| Parameter                                      | Required value                                                                                     | Status / source                                                                          |
-|------------------------------------------------|----------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
-| Agent product/runtime                          | GitHub Copilot                                                                                     | Current session environment.                                                             |
-| Agent/runtime version                          | 1.0.96                                                                                             | Current session environment; not a repository-pinned dependency.                         |
-| Underlying agent framework / implementation    | Not specified (TBD)                                                                                | Not exposed in the session.                                                              |
-| Agent process mode and lifecycle               | API-accessed interactive coding session                                                            | Current session; backend process/lifecycle details are not exposed.                      |
-| Workspace / repository root                    | `/cs763/project/project-portal`                                                                    | Current session environment.                                                             |
-| File-system access policy                      | Not specified (TBD)                                                                                | Available workspace path is known; full host permission policy is not exposed.           |
-| Human approval or autonomous action boundaries | Not specified (TBD)                                                                                | No execution policy is configured here.                                                  |
-| Agent logging or session persistence           | Session state is available for this conversation; runtime retention policy is not specified (TBD). | Current session tools expose session artifacts; broader retention policy is not exposed. |
+| Parameter                                      | Current value                                                                                                     | Status / source                                                                            |
+|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| Agent product/runtime                          | GitHub Copilot CLI                                                                                                | Current session environment.                                                               |
+| Agent/runtime version                          | 1.0.112                                                                                                           | Current session environment; not a repository-pinned dependency.                           |
+| Agent process mode and lifecycle               | API-accessed interactive coding session                                                                           | Current session; backend process/lifecycle details are not exposed.                        |
+| Workspace / repository root                    | `\cs763\project\project-portal`                                                                                   | Current session environment.                                                               |
+| File-system access policy                      | Workspace read, search, and edit tools are available; broader host policy is not exposed                          | Current session tools.                                                                     |
+| Human approval or autonomous action boundaries | Repository instructions require explicit user confirmation before creating a commit; other limits are not exposed | `.github/copilot-instructions.md` and current session.                                     |
+| Agent logging or session persistence           | Session state is available for this conversation; retention policy is not exposed                                 | Current session tools expose session artifacts; broader retention details are unavailable. |
 
 ## 2. LLM settings
 
 The model-selection mode for this session is **Auto**: the system selects the
-underlying model dynamically. The exact model and low-level inference
-configuration are not exposed. These observations describe this session, not
+underlying model dynamically. These observations describe this session, not
 portable repository defaults.
 
-| Parameter                                               | Required value                   | Status                                                                     |
-|---------------------------------------------------------|----------------------------------|----------------------------------------------------------------------------|
-| Agent-facing AI service                                 | GitHub Copilot                   | Current session environment.                                               |
-| Model-selection mode                                    | Auto; model selected dynamically | Current session environment.                                               |
-| Underlying LLM provider/vendor                          | Not specified (TBD)              | Not exposed by the session.                                                |
-| Exact model identifier and revision                     | Not specified (TBD)              | Auto mode selects the concrete model dynamically; its name is not exposed. |
-| API endpoint / deployment                               | Not specified (TBD)              | Managed service endpoint is not exposed.                                   |
-| Credential reference                                    | Not specified (TBD)              | Session authentication mechanism and secrets are not exposed.              |
-| Context-window limit                                    | Not specified (TBD)              | No limit is documented.                                                    |
-| Maximum output tokens                                   | Not specified (TBD)              | No limit is documented.                                                    |
-| Sampling parameters (for example, temperature or top-p) | Not specified (TBD)              | No values are documented.                                                  |
-| Request timeout, retry policy, and rate limits          | Not specified (TBD)              | No values are documented.                                                  |
-| Fallback model or provider                              | Not specified (TBD)              | No fallback is documented.                                                 |
+| Parameter               | Current value                    | Status                       |
+|-------------------------|----------------------------------|------------------------------|
+| Agent-facing AI service | GitHub Copilot                   | Current session environment. |
+| Model-selection mode    | Auto; model selected dynamically | Current session environment. |
 
 ## 3. Tool settings
 
-The current session provides the following tool interfaces. Their availability
+The following tool interfaces are available in this session. Their availability
 is session-specific and does not constitute a repository tool manifest or a
 general host permission policy.
 
-| Tool setting                                  | Required value                                                                       | Status                                                               |
-|-----------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------------------|
-| Agent tool interfaces                         | Shell commands, repository file read/search/edit, GitHub MCP, and IDE debugger tools | Available in the current session.                                    |
-| Shell command utilities confirmed available   | `git` 2.38.1; `curl` 8.7.1                                                           | Current host command versions.                                       |
-| Shell / command execution scope               | Not specified (TBD)                                                                  | A shell tool is available; complete execution policy is not exposed. |
-| Git operations and permitted remotes          | Not specified (TBD)                                                                  | Git is installed; remote permissions are not specified.              |
-| Network access, domains, and API integrations | Not specified (TBD)                                                                  | `curl` is installed; network policy is not exposed.                  |
-| Per-tool approval requirements                | Not specified (TBD)                                                                  | Not exposed by the session.                                          |
-| Tool timeouts, concurrency, and output limits | Not specified (TBD)                                                                  | No general invocation limits are exposed.                            |
+| Tool setting                                  | Current value                                                                      | Status                                                                |
+|-----------------------------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| Agent tool interfaces                         | PowerShell; repository read/search/edit; GitHub MCP; IDE selection and diagnostics | Available in the current session.                                     |
+| Shell command utilities confirmed available   | Git 2.39.1.windows.1; curl 8.13.0                                                  | Versions reported by the current host.                                |
+| Shell / command execution scope               | Workspace commands are available; broader execution policy is not exposed          | Current session provides PowerShell; complete host policy is unknown. |
+| Git operations and permitted remotes          | Git is installed; remote authorization is not exposed                              | Current host and session.                                             |
+| Network access, domains, and API integrations | curl is installed; permitted network destinations are not exposed                  | Current host and session.                                             |
+| Tool timeouts, concurrency, and output limits | Tool-specific limits apply; no complete global configuration is exposed            | Current tool interfaces.                                              |
 
-The project build uses the Gradle wrapper; its configured distribution is
-Gradle 9.6.0 (`gradle/wrapper/gradle-wrapper.properties`). This is a project
-build-tool setting, not an agent permission or tool allowlist.
+The project uses the Gradle wrapper with Gradle 9.6.0 (`gradle/wrapper/gradle-wrapper.properties`). The current build
+declares the Java, Spring Boot 3.3.5, dependency-management 1.1.6, and SonarQube 7.5.0.8588 plugins in `build.gradle`.
+These are project build settings, not agent tool permissions.
 
 ## 4. Host and project environment
 
 ### Specification targets
 
-The following are required environment targets stated by `spec.md`. They
-describe the intended service stack and are not all configured by the current
-build.
+The following are intended environment targets stated by `spec.md`; they are not proof that every dependency is
+currently configured in the build.
 
 | Parameter             | Specification target                                     | Source                                        |
 |-----------------------|----------------------------------------------------------|-----------------------------------------------|
@@ -85,59 +66,53 @@ build.
 | JSON processing       | Jackson 2.x                                              | `spec.md`, “System Architecture & Tech Stack” |
 | Local fixture data    | JSON fixtures loaded under `dev` or `test` profiles      | `spec.md`, “Data Seed Strategy”               |
 
-The exact relational database product, database connection settings, and
-profile activation mechanism are not specified.
-
 ### Current repository build configuration
 
-| Parameter                          | Current value                     | Source                                                                        |
-|------------------------------------|-----------------------------------|-------------------------------------------------------------------------------|
-| Build system                       | Gradle wrapper                    | `gradlew`, `build.gradle`                                                     |
-| Gradle wrapper distribution        | Gradle 9.6.0 binary distribution  | `gradle/wrapper/gradle-wrapper.properties`                                    |
-| Gradle plugins                     | Java plugin                       | `build.gradle`                                                                |
-| Project group / version            | `com.bu` / `1.0-SNAPSHOT`         | `build.gradle`                                                                |
-| Java toolchain                     | Azul Zulu JDK 17                  | `build.gradle` selects Java 17 and the Azul vendor for compilation and tests. |
-| Spring Boot plugin or dependencies | Not declared in the current build | `build.gradle`                                                                |
+| Parameter                   | Current value                                                               | Source                                                     |
+|-----------------------------|-----------------------------------------------------------------------------|------------------------------------------------------------|
+| Build system                | Gradle wrapper                                                              | `gradlew`, `build.gradle`                                  |
+| Gradle wrapper distribution | Gradle 9.6.0 binary distribution                                            | `gradle/wrapper/gradle-wrapper.properties`                 |
+| Gradle plugins              | Java, Spring Boot 3.3.5, dependency-management 1.1.6, SonarQube 7.5.0.8588  | `build.gradle`                                             |
+| Project group / version     | `com.bu` / `1.0.0`                                                          | `build.gradle`                                             |
+| Java toolchain              | Azul vendor, Java 17                                                        | `build.gradle` configures the compiler and test toolchain. |
+| Spring dependencies         | Spring Boot JPA and web starters; Flyway; PostgreSQL and H2 runtime drivers | `build.gradle`                                             |
+| Database migrations         | Flyway enabled; Hibernate schema mode is `validate`                         | `src/main/resources/application.properties`                |
+| Validation dependency       | No Bean Validation starter explicitly declared                              | `build.gradle`                                             |
 
-The Java 17 toolchain is configured in the current build. The Spring Boot 3.2+
-specification target should not be read as proof that the current build
-enforces or packages that stack. The current `build.gradle` applies the Java
-plugin and declares JUnit test dependencies; it does not declare Spring Boot,
-JPA, validation, or Jackson dependencies.
+The build is configured for Java 17 and Spring Boot 3.3.5. This is newer than the minimum Spring Boot 3.2+ target stated
+in `spec.md`. The specification mentions Jakarta Bean Validation, but the current build does not explicitly declare a
+validation starter.
 
-### Current host details
+### Current host and application configuration
 
-| Host parameter                                        | Value                                                              |
-|-------------------------------------------------------|--------------------------------------------------------------------|
-| Operating system                                      | macOS (Darwin)                                                     |
-| Operating-system release                              | Not specified (TBD); only the Darwin kernel/platform was queried.  |
-| CPU architecture                                      | x86_64                                                             |
-| Container or virtual-machine image                    | Not specified (TBD)                                                |
-| Memory and CPU allocation                             | Not specified (TBD)                                                |
-| Installed Java runtime                                | Azul Zulu JDK 17 (user-reported)                                   |
-| Java build toolchain                                  | Azul vendor, Java 17; configured in `build.gradle`.                |
-| Java target for the specified service                 | Java 17 LTS; matches the configured Java toolchain.                |
-| Database engine, address, and credentials reference   | Not specified (TBD); specification requires a relational database. |
-| Required environment variables and their sources      | Not specified (TBD)                                                |
-| Deployment-specific paths, ports, and resource limits | Not specified (TBD)                                                |
+| Host or application parameter             | Current value                                                                   | Source / status                                                    |
+|-------------------------------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| Operating system                          | Windows 10 Pro, version 10.0.19045                                              | Current host query.                                                |
+| CPU architecture                          | x64                                                                             | Current host query.                                                |
+| Java runtime on host `PATH`               | `java` was not found on `PATH` during inspection                                | Current host query; separate from the configured Gradle toolchain. |
+| Java build toolchain                      | Azul vendor, Java 17                                                            | `build.gradle`.                                                    |
+| Java target for the specified service     | Java 17 LTS                                                                     | `spec.md`; matches the configured toolchain.                       |
+| Local development database                | File-backed H2 in PostgreSQL compatibility mode at `build/dev-db/projectportal` | `application-dev.properties`.                                      |
+| Test database                             | In-memory H2 in PostgreSQL compatibility mode                                   | `src/functionaltest/resources/application-test.properties`.        |
+| Compose database                          | PostgreSQL 16 Alpine, service name `database`, port 5432                        | `docker-compose.yml`.                                              |
+| Application port                          | 8080                                                                            | `docker-compose.yml`, `Dockerfile`.                                |
+| Database connection environment variables | `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`, `SPRING_DATASOURCE_URL`                | `docker-compose.yml`, `application.properties`.                    |
+| Profile selection                         | Compose sets `SPRING_PROFILES_ACTIVE=postgres`; IDE `dev` profile is explicit   | `docker-compose.yml`, `README.md`.                                 |
 
-## 5. Configuration sources and completion
+`application.properties` supplies a local PostgreSQL URL and default database user values, which can be overridden with
+environment variables. Docker Compose uses the `database` service and a named volume; deployment credentials should be
+supplied through the deployment environment rather than treated as agent settings.
 
-Project targets are sourced from `spec.md`; current build settings are sourced
-from `build.gradle` and the Gradle wrapper properties. Session-specific agent
-and host observations were supplied by the current execution environment or
-queried from the host. Values marked TBD are not available through these
-sources and must be obtained from the relevant service or host administrator
-if a complete deployment configuration is required.
+## 5. Configuration sources and limits
 
-## 6. Operational Guardrails & Guidelines
+Project targets and application settings above are sourced from `spec.md`,`build.gradle`, Gradle wrapper properties,
+application properties,`docker-compose.yml`, `Dockerfile`, and `README.md`. Session-specific facts come from the current
+execution environment or host queries. Agent internals, managed-service configuration, broader host permissions, and
+deployment values not defined in the repository are not exposed or specified; they are not inferred here.
 
-To maintain code quality and strict adherence to enterprise design patterns, the agent operates under the following
-local workspace instructions (.github/copilot-instructions.md):
+## 6. Repository agent instructions
 
-* Strict Null Safety: Mandatory use of Jakarta Bean Validation (@NotNull, @Size) and Java Optional wrappers where
-  applicable.
-* Encapsulation & Lombok: Utilization of Lombok (@Getter, @Setter) to reduce boilerplate while maintaining explicit
-  entity relationship boundaries.
-* Locale Enforcement: Forcing explicit JVM locales (Locale.US) during data formatting or serialization tasks to prevent
-  data corruption.
+The repository instructions in `.github/copilot-instructions.md` require contribution-weight headers on source files,
+contribution history for source changes, and explicit user confirmation immediately before creating a commit. They also
+describe Project Portal's service boundaries and architectural constraints. They do not specify the runtime, model
+internals, or tool permissions listed as unavailable above.
