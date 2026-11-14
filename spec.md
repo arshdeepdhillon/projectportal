@@ -1,633 +1,188 @@
 ---
- AI Contribution Weight: [ 97% ] AI Generated / [3%] Human Refactored
----
-   
-# Technical Functional Specification: Academic Artifact Catalog Service
-
-## 1. Overview & Scope
-
-The **Academic Artifact Catalog Service** is a Spring Boot 3 (Java 17) microservice responsible for indexing,
-categorizing, and serving metadata for three distinct types of academic artifacts:
-
-1. **Git Repository Profiles** (code repositories, open-source tools, scripts)
-2. **Academic Manuscript Documents** (papers, preprints, technical reports)
-3. **Video Presentation Metadata** (lectures, talk recordings, conference presentations)
-
-Each artifact can be dynamically associated across multiple academic organizational contexts:
-
-- **Academic Labs** (e.g., Vision & Learning Lab)
-- **Department Programs** (e.g., Department of Computer Science)
-- **Course Affiliations** (e.g., CS-701 Deep Learning)
-
+AI Contribution Weight: [ 100% ] AI Generated / [0%] Human Refactored
 ---
 
-## 2. System Architecture & Tech Stack
-
-- **JDK Version:** Java 17 LTS
-- **Framework:** Spring Boot 3.2+
-- **Persistence:** Spring Data JPA / Hibernate 6 (Relational Database)
-- **Data Validation:** Jakarta Bean Validation (`jakarta.validation`)
-- **JSON Processing:** Jackson 2.x
-- **Data Seed Strategy:** Local JSON fixture files loaded on `@Profile("dev")` or `@Profile("test")` startup.
-
----
-
-## 2.1 Project Directory Structure
-
-```text
-projectportal/
-├── src/main/java/com/bu
-│   ├── config/                     # Spring / Application configurations
-│   ├── repository/                 # JPA Interfaces for data persistence
-│   ├── model/                      # Core global Database entities and shared schemas
-│   ├── service/                    # Feature-driven service modules
-│   │   ├── repositoryindexer/      # Feature Module: Git Repository Indexer
-│   │   │   ├── api/                # DTOs, request payloads, and response contracts
-│   │   │   ├── entity/             # Feature-specific mapping entities, internal only DTOs
-│   │   │   ├── controller          # REST Controller endpoints exposing Feature APIs
-│   │   │   └── featureservice      # Feature-specific business logic implementation
-│   └── mockresponse/               # CRITICAL: External Isolated Domain Dependencies
-│       ├── domain2/                # Resource Allocation Mock Services & DTOs
-└── src/main/resources/
-    └── mockresponse/               # Raw JSON data structures mimicking external systems
-        ├── domain2/                # Example: Mock JSON schemas for resource allocation & help desk hub 
-```
-
----
-
-## 3. Entity Data Model (JPA Mappings)
-
-### 3.1 Entity Relationship Diagram (Logical)
-
-- `Artifact` (Abstract Base Class / Single Table Inheritance)
-  - `GitRepositoryArtifact`
-  - `ManuscriptArtifact`
-  - `VideoPresentationArtifact`
-- `AcademicLab`
-- `DepartmentProgram`
-- `CourseAffiliation`
-
-Many-to-Many associations exist between `Artifact` and each of the three academic context entities using explicit join
-tables.
-
-### 3.2 Core JPA Entity Definitions
-
-#### Base Class: `Artifact.java`
-
-```java
-package com.academic.catalog.entity;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
-@Entity
-@Table(name = "artifacts")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "artifact_type", discriminatorType = DiscriminatorType.STRING)
-@Getter
-@Setter
-public abstract class Artifact {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
-    @NotNull
-    @Size(max = 255)
-    @Column(name = "title", nullable = false)
-    private String title;
-
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
-
-    @NotNull
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
-
-    @NotNull
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt = Instant.now();
-
-    @ManyToMany
-    @JoinTable(
-            name = "artifact_lab_associations",
-            joinColumns = @JoinColumn(name = "artifact_id"),
-            inverseJoinColumns = @JoinColumn(name = "lab_id")
-    )
-    private Set<AcademicLab> labs = new HashSet<>();
+# Project Artifact & Repository Indexer — Functional Specification
 
-    @ManyToMany
-    @JoinTable(
-            name = "artifact_department_associations",
-            joinColumns = @JoinColumn(name = "artifact_id"),
-            inverseJoinColumns = @JoinColumn(name = "department_id")
-    )
-    private Set<DepartmentProgram> departments = new HashSet<>();
+## 1. Purpose and scope
 
-    @ManyToMany
-    @JoinTable(
-            name = "artifact_course_associations",
-            joinColumns = @JoinColumn(name = "artifact_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id")
-    )
-    private Set<CourseAffiliation> courses = new HashSet<>();
-}
-```
-
-#### Subclass: `GitRepositoryArtifact.java`
-
-```java
-package com.academic.catalog.entity;
-
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-@Entity
-@DiscriminatorValue("GIT_REPOSITORY")
-@Getter
-@Setter
-public class GitRepositoryArtifact extends Artifact {
-
-    @Column(name = "repo_url", nullable = false)
-    private String repoUrl;
-
-    @Column(name = "primary_language")
-    private String primaryLanguage;
-
-    @Column(name = "star_count")
-    private Integer starCount = 0;
-
-    @Column(name = "fork_count")
-    private Integer forkCount = 0;
-
-    @Column(name = "license_name")
-    private String licenseName;
-
-    @Column(name = "default_branch")
-    private String defaultBranch = "main";
-}
-```
-
-#### Subclass: `ManuscriptArtifact.java`
-
-```java
-package com.academic.catalog.entity;
-
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDate;
-
-@Entity
-@DiscriminatorValue("MANUSCRIPT")
-@Getter
-@Setter
-public class ManuscriptArtifact extends Artifact {
-
-    @Column(name = "doi", unique = true)
-    private String doi;
-
-    @Column(name = "publication_venue")
-    private String publicationVenue;
-
-    @Column(name = "publication_date")
-    private LocalDate publicationDate;
-
-    @Column(name = "document_pdf_url")
-    private String documentPdfUrl;
-
-    @Column(name = "citation_count")
-    private Integer citationCount = 0;
-}
-```
-
-#### Subclass: `VideoPresentationArtifact.java`
-
-```java
-package com.academic.catalog.entity;
-
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-@Entity
-@DiscriminatorValue("VIDEO_PRESENTATION")
-@Getter
-@Setter
-public class VideoPresentationArtifact extends Artifact {
-
-    @Column(name = "video_url", nullable = false)
-    private String videoUrl;
-
-    @Column(name = "platform_name")
-    private String platformName; // e.g., YouTube, Vimeo, Institutional LMS
-
-    @Column(name = "duration_seconds")
-    private Integer durationSeconds;
-
-    @Column(name = "thumbnail_url")
-    private String thumbnailUrl;
-}
-```
-
-#### Association Entities
-
-```java
-package com.academic.catalog.entity;
-
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.UUID;
-
-@Entity
-@Table(name = "academic_labs")
-@Getter
-@Setter
-public class AcademicLab {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
-
-    @Column(name = "code", nullable = false, unique = true)
-    private String code;
-}
-
-@Entity
-@Table(name = "department_programs")
-@Getter
-@Setter
-public class DepartmentProgram {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
-
-    @Column(name = "code", nullable = false, unique = true)
-    private String code;
-}
-
-@Entity
-@Table(name = "course_affiliations")
-@Getter
-@Setter
-public class CourseAffiliation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
-    @Column(name = "course_code", nullable = false, unique = true)
-    private String courseCode;
-
-    @Column(name = "course_name", nullable = false)
-    private String courseName;
-}
-```
-
----
-
-## 4. REST Endpoints Specification
-
-### 4.1 Endpoint Matrix
-
-| Method   | Endpoint                 | Description                             | Query Parameters / Filters                                                    |
-|:---------|:-------------------------|:----------------------------------------|:------------------------------------------------------------------------------|
-| `GET`    | `/api/v1/artifacts`      | Search & list all artifacts (paginated) | `type`, `labId`, `departmentId`, `courseId`, `search`, `page`, `size`, `sort` |
-| `GET`    | `/api/v1/artifacts/{id}` | Fetch a single artifact by UUID         | N/A                                                                           |
-| `POST`   | `/api/v1/artifacts`      | Create a new artifact profile           | N/A                                                                           |
-| `PUT`    | `/api/v1/artifacts/{id}` | Update an existing artifact             | N/A                                                                           |
-| `DELETE` | `/api/v1/artifacts/{id}` | Delete an artifact by UUID              | N/A                                                                           |
-| `GET`    | `/api/v1/labs`           | List academic labs                      | `page`, `size`, `sort`                                                        |
-| `GET`    | `/api/v1/departments`    | List department programs                | `page`, `size`, `sort`                                                        |
-| `GET`    | `/api/v1/courses`        | List course affiliations                | `page`, `size`, `sort`                                                        |
-
----
-
-## 5. JSON Schemas
-
-### 5.1 Standard Paginated Response Envelope Schema (`paginated-response.json`)
+The Project Artifact & Repository Indexer is Domain 1 of Project Portal. It is the system of record for projects and the
+Git repositories, academic manuscripts, and video presentations owned by those projects. Projects are associated with
+academic labs, department programs, and courses.
+
+The service provides project lifecycle operations, artifact metadata operations, manuscript file storage, and project
+search. Project artifacts inherit their academic context from the parent project.
+
+## 2. Functional model
+
+### 2.1 Project
+
+A project has:
+
+- A service-generated UUID.
+- A title and description.
+- `createdAt` and `updatedAt` timestamps represented as UTC epoch milliseconds.
+- An integer `revisionVersion`, initially `1`.
+- One or more member-role entries. Each entry has an opaque string `memberId` and an open string `role`. A member may
+  have multiple distinct role entries on the same project.
+- One or more lab, department, and course references in total. Each association is owned by the project.
+- An internal integer `deleted` flag, initially `0`; the flag is not included in API responses.
+
+Project create and update requests include the full member and academic-reference collections. `PUT` replaces project
+scalar fields and those complete collections, and leaves artifacts unchanged.
+
+`revisionVersion` advances only when the project title or description actually changes. An identical update or a change
+only to members or academic references does not advance the revision or change `updatedAt`. Soft-deleting a project
+changes `updatedAt` but does not advance `revisionVersion`.
+
+Deleting a project sets `deleted` to `1`. Normal project reads and search exclude deleted projects immediately. There is
+no project restore operation. The internal purge operation permanently removes deleted projects and their owned data.
+
+### 2.2 Academic reference records
+
+Labs and departments have `id`, `name`, and `code`. Courses have `id`, `courseCode`, and `courseName`. Their identifiers
+are UUIDs. The service exposes read-only list endpoints for these records; every list is an unpaginated JSON array.
+Production records are provisioned by deployment. Example records are loaded only when `dev` or `test` is explicitly
+active.
+
+### 2.3 Artifacts
+
+An artifact has a service-generated UUID, an `artifactType`, a parent `projectId`, and an internal integer `deleted`
+flag, initially `0`. The flag is not included in API responses. Artifact responses contain type-specific fields and do
+not add shared title, description, or timestamp fields.
+
+Artifact type path tokens are `repositories`, `manuscripts`, and `videos`.
+
+#### Git repository
+
+- `repoUrl`
+- `targetBranch`
+- `primaryTechStack` (one string)
+- `totalCommitCount`
+- `latestCommitTimestamp` (UTC epoch milliseconds)
+
+#### Manuscript
+
+- `title`
+- `abstract`
+- `authors` (list of names)
+- `keywords` (list of strings)
+- `year`
+- Optional `publisher` object with `name` and `venue`
+- Optional current file metadata containing the SHA-256 hash, original filename, and media type
+
+A manuscript has at most one current file. File metadata is stored in a separate one-to-one database record, with its
+binary content in a separate associated record. Uploading another file replaces the current file and its hash. Deleting
+a manuscript file removes both records while retaining the manuscript and its bibliographic metadata.
+
+#### Video presentation
+
+- `videoUrl`
+- `thumbnailUrl`
+- `durationMillis`
+- `description`
+
+Deleting an artifact sets its `deleted` flag to `1`. Normal artifact lists, individual reads, project search, and
+manuscript ZIP downloads exclude deleted artifacts. There is no artifact restore operation. Deleted artifacts are
+physically removed when their parent project is purged.
+
+## 3. REST API
+
+All timestamps are UTC epoch milliseconds. Successful reads return `200 OK`. Create operations return `201 Created`,
+the created representation, and a `Location` header. Updates return `200 OK` with the updated representation. Delete
+operations return `204 No Content`.
+
+| Method   | Endpoint                                                                 | Behavior                                                                                                                                                                   |
+|:---------|:-------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `GET`    | `/api/v1/projects`                                                       | Search and list active projects using query parameters. Returns a JSON array.                                                                                              |
+| `POST`   | `/api/v1/projects`                                                       | Create a project.                                                                                                                                                          |
+| `GET`    | `/api/v1/projects/{project_id}`                                          | Read one active project.                                                                                                                                                   |
+| `PUT`    | `/api/v1/projects/{project_id}`                                          | Replace project scalar fields, members, and academic references.                                                                                                           |
+| `DELETE` | `/api/v1/projects/{project_id}`                                          | Soft-delete a project.                                                                                                                                                     |
+| `POST`   | `/api/v1/projects/purge`                                                 | Internal maintenance operation: permanently remove deleted projects and their owned data. Returns `200 OK` with `{"purgedProjectCount": 0}`.                               |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts`                                | List active artifacts for a project as a JSON array.                                                                                                                       |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts/{artifact_type}`                | List active artifacts of one type as a JSON array.                                                                                                                         |
+| `POST`   | `/api/v1/projects/{project_id}/artifacts/{artifact_type}`                | Create an artifact of the path type.                                                                                                                                       |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}`  | Read one active artifact.                                                                                                                                                  |
+| `PUT`    | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}`  | Replace the artifact’s type-specific fields.                                                                                                                               |
+| `DELETE` | `/api/v1/projects/{project_id}/artifacts/{artifact_type}/{artifact_id}`  | Soft-delete an artifact.                                                                                                                                                   |
+| `POST`   | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Upload one manuscript file as multipart form data in the `file` part. Returns `201 Created` for the first file and `200 OK` when replacing it, with current file metadata. |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Download the current manuscript file using its stored media type and original filename.                                                                                    |
+| `DELETE` | `/api/v1/projects/{project_id}/artifacts/manuscripts/{artifact_id}/file` | Remove the current file and its metadata; retain the manuscript.                                                                                                           |
+| `GET`    | `/api/v1/projects/{project_id}/artifacts/manuscripts/download`           | Download a ZIP of current files belonging to active manuscripts.                                                                                                           |
+| `GET`    | `/api/v1/labs`                                                           | List labs as a JSON array.                                                                                                                                                 |
+| `GET`    | `/api/v1/departments`                                                    | List departments as a JSON array.                                                                                                                                          |
+| `GET`    | `/api/v1/courses`                                                        | List courses as a JSON array.                                                                                                                                              |
+
+ZIP entries use `<artifact-UUID>/<original filename>` to keep entries distinct when filenames match. Manuscripts without
+a current file are omitted.
+
+### 3.1 Project search parameters
+
+`GET /api/v1/projects` accepts these optional query parameters:
+
+| Parameter               | Meaning                                                                                                                  |
+|:------------------------|:-------------------------------------------------------------------------------------------------------------------------|
+| `keyword`               | Case-insensitive substring search across project text and artifact metadata.                                             |
+| `labId`                 | Match projects associated with this lab UUID.                                                                            |
+| `departmentId`          | Match projects associated with this department UUID.                                                                     |
+| `courseId`              | Match projects associated with this course UUID.                                                                         |
+| `artifactType`          | Match projects containing at least one active artifact of the selected type: `repositories`, `manuscripts`, or `videos`. |
+| `timeRange.createdFrom` | Inclusive lower bound on project `createdAt`, as UTC epoch milliseconds.                                                 |
+| `timeRange.createdTo`   | Inclusive upper bound on project `createdAt`, as UTC epoch milliseconds.                                                 |
+
+Each time bound is independently optional. When multiple filter categories are supplied, a project must match every
+supplied category. Keyword search considers active artifacts only. Project search is unpaginated.
+
+## 4. API representations
+
+### 4.1 Project representation
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "PaginatedResponse",
-  "type": "object",
-  "required": [
-    "content",
-    "page",
-    "size",
-    "totalElements",
-    "totalPages",
-    "last"
-  ],
-  "properties": {
-    "content": {
-      "type": "array",
-      "items": {
-        "type": "object"
-      }
-    },
-    "page": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "size": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "totalElements": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "totalPages": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "last": {
-      "type": "boolean"
-    }
-  }
-}
-```
-
-### 5.2 Artifact Request/Response Payload Schema (`artifact-dto.json`)
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "ArtifactDTO",
-  "type": "object",
-  "required": [
-    "id",
-    "title",
-    "artifactType",
-    "createdAt",
-    "updatedAt"
-  ],
-  "properties": {
-    "id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "title": {
-      "type": "string",
-      "maxLength": 255
-    },
-    "description": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "artifactType": {
-      "type": "string",
-      "enum": [
-        "GIT_REPOSITORY",
-        "MANUSCRIPT",
-        "VIDEO_PRESENTATION"
-      ]
-    },
-    "createdAt": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "updatedAt": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "gitDetails": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "properties": {
-        "repoUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "primaryLanguage": {
-          "type": "string"
-        },
-        "starCount": {
-          "type": "integer"
-        },
-        "forkCount": {
-          "type": "integer"
-        },
-        "licenseName": {
-          "type": "string"
-        },
-        "defaultBranch": {
-          "type": "string"
-        }
-      }
-    },
-    "manuscriptDetails": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "properties": {
-        "doi": {
-          "type": "string"
-        },
-        "publicationVenue": {
-          "type": "string"
-        },
-        "publicationDate": {
-          "type": "string",
-          "format": "date"
-        },
-        "documentPdfUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "citationCount": {
-          "type": "integer"
-        }
-      }
-    },
-    "videoDetails": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "properties": {
-        "videoUrl": {
-          "type": "string",
-          "format": "uri"
-        },
-        "platformName": {
-          "type": "string"
-        },
-        "durationSeconds": {
-          "type": "integer"
-        },
-        "thumbnailUrl": {
-          "type": "string",
-          "format": "uri"
-        }
-      }
-    },
-    "labIds": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "format": "uuid"
-      }
-    },
-    "departmentIds": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "format": "uuid"
-      }
-    },
-    "courseIds": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "format": "uuid"
-      }
-    }
-  }
-}
-```
-
----
-
-## 6. Static Enterprise Mock Data Structure
-
-Below is the local JSON seed data fixture structure (`src/main/resources/mocks/artifacts-fixture.json`), utilized during
-integration testing and developer static mocking mode.
-
-```json
-{
-  "labs": [
+  "id": "77777777-7777-7777-7777-777777777777",
+  "title": "Project title",
+  "description": "Project description",
+  "createdAt": 1794594000000,
+  "updatedAt": 1794594000000,
+  "revisionVersion": 1,
+  "members": [
     {
-      "id": "11111111-1111-1111-1111-111111111111",
-      "name": "Vision & Autonomous Systems Lab",
-      "code": "VASL-01"
+      "memberId": "member-001",
+      "role": "student"
     },
     {
-      "id": "22222222-2222-2222-2222-222222222222",
-      "name": "Quantum Computing & Information Group",
-      "code": "QCIG-02"
+      "memberId": "member-001",
+      "role": "team lead"
     }
   ],
-  "departments": [
-    {
-      "id": "33333333-3333-3333-3333-333333333333",
-      "name": "Department of Computer Science",
-      "code": "CS"
-    },
-    {
-      "id": "44444444-4444-4444-4444-444444444444",
-      "name": "Department of Electrical Engineering",
-      "code": "EE"
-    }
+  "labIds": [
+    "11111111-1111-1111-1111-111111111111"
   ],
-  "courses": [
-    {
-      "id": "55555555-5555-5555-5555-555555555555",
-      "courseCode": "CS-701",
-      "courseName": "Advanced Deep Learning Frameworks"
-    },
-    {
-      "id": "66666666-6666-6666-6666-666666666666",
-      "courseCode": "EE-502",
-      "courseName": "Embedded Robotics and Perception"
-    }
+  "departmentIds": [
+    "33333333-3333-3333-3333-333333333333"
   ],
-  "artifacts": [
-    {
-      "id": "77777777-7777-7777-7777-777777777777",
-      "title": "TorchPerception: Real-time Object Detection Toolkit",
-      "description": "An open-source library for low-latency visual perception models deployed on edge devices.",
-      "artifactType": "GIT_REPOSITORY",
-      "createdAt": "2026-01-15T10:30:00Z",
-      "updatedAt": "2026-02-01T14:20:00Z",
-      "gitDetails": {
-        "repoUrl": "https://github.com/vasl-lab/torch-perception",
-        "primaryLanguage": "Python",
-        "starCount": 1420,
-        "forkCount": 230,
-        "licenseName": "Apache-2.0",
-        "defaultBranch": "main"
-      },
-      "labIds": [
-        "11111111-1111-1111-1111-111111111111"
-      ],
-      "departmentIds": [
-        "33333333-3333-3333-3333-333333333333",
-        "44444444-4444-4444-4444-444444444444"
-      ],
-      "courseIds": [
-        "55555555-5555-5555-5555-555555555555",
-        "66666666-6666-6666-6666-666666666666"
-      ]
-    },
-    {
-      "id": "88888888-8888-8888-8888-888888888888",
-      "title": "Sub-millisecond Transformer Inference on Embedded GPUs",
-      "description": "Peer-reviewed manuscript evaluating specialized quantization strategies for edge computer vision.",
-      "artifactType": "MANUSCRIPT",
-      "createdAt": "2026-02-10T08:00:00Z",
-      "updatedAt": "2026-02-10T08:00:00Z",
-      "manuscriptDetails": {
-        "doi": "10.1145/3318464.3389700",
-        "publicationVenue": "IEEE International Conference on Computer Vision (ICCV)",
-        "publicationDate": "2026-02-01",
-        "documentPdfUrl": "https://vasl.institution.edu/papers/sub-ms-transformer.pdf",
-        "citationCount": 42
-      },
-      "labIds": [
-        "11111111-1111-1111-1111-111111111111"
-      ],
-      "departmentIds": [
-        "33333333-3333-3333-3333-333333333333"
-      ],
-      "courseIds": [
-        "55555555-5555-5555-5555-555555555555"
-      ]
-    },
-    {
-      "id": "99999999-9999-9999-9999-999999999999",
-      "title": "Keynote: Scalable Quantum Error Correction Algorithms",
-      "description": "Video recording of the annual symposium presentation on fault-tolerant quantum computing architectures.",
-      "artifactType": "VIDEO_PRESENTATION",
-      "createdAt": "2026-02-18T16:45:00Z",
-      "updatedAt": "2026-02-18T16:45:00Z",
-      "videoDetails": {
-        "videoUrl": "https://youtube.com/watch?v=mock_video_id_123",
-        "platformName": "YouTube",
-        "durationSeconds": 3240,
-        "thumbnailUrl": "https://img.youtube.com/vi/mock_video_id_123/hqdefault.jpg"
-      },
-      "labIds": [
-        "22222222-2222-2222-2222-222222222222"
-      ],
-      "departmentIds": [
-        "33333333-3333-3333-3333-333333333333"
-      ],
-      "courseIds": []
-    }
+  "courseIds": [
+    "55555555-5555-5555-5555-555555555555"
   ]
 }
 ```
+
+Project representations do not embed artifacts. Artifact representations include `id`, `projectId`, and
+`artifactType`, plus their type-specific fields.
+
+### 4.2 Purge response
+
+```json
+{
+  "purgedProjectCount": 3
+}
+```
+
+## 5. Persistence and runtime
+
+The service uses Spring Data JPA with a relational database and Flyway-managed schema migrations. Manuscript file
+records store the file bytes, SHA-256 hash, original filename, and media type separately from manuscript metadata.
+
+The `dev` profile uses the local file-backed H2 database. The `postgres` profile is used by Docker Compose. No profile
+is active by default; `dev` and `test` must be selected explicitly for their example reference data.

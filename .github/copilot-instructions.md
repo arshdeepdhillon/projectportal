@@ -33,7 +33,8 @@
 * Whenever an agent is used to generate or modify code, it must clearly log its interaction and how they are modified
   and/or verified in a single entry such as code_AI_history.md.
     * For every conversation/task recorded in code_AI_history.md, append all user prompts and clarification/choice
-      responses verbatim and in order to Prompt_test_log.md, using the next sequential `### Prompt <#> <Chat description>`
+      responses verbatim and in order to Prompt_test_log.md, using the next sequential
+      `### Prompt <#> <Chat description>`
       heading. Do not paraphrase or omit follow-up prompts. If an older conversation's exact prompts are unavailable,
       say so explicitly instead of reconstructing them.
     * For example: Each git commit must be labeled to track the evolution of contributions over time.

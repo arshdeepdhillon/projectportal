@@ -50,73 +50,230 @@
 ## AI AGENT BUILD: Jackson pretty-print startup fix
 
 - Commit: `9fe3c66cac586954501bf6dd6c683c5dce2896fb` (`AI AGENT BUILD: Spring properties configuration`).
-- Removed the unsupported `spring.jackson.generator.write-end-of-line-after-value` setting from the user's `application.properties`; retained their `spring.jackson.serialization.indent-output=true` setting. No functional test edits.
-- Converted the H2 Spring test profile from `application-test.yml` to equivalent `application-test.properties`; non-Spring YAML remains unchanged.
-- Changed hunk: the deleted unsupported generator property was agent-modified; the remaining properties and existing formatting configuration are unchanged.
-- Verification: `./gradlew clean build --no-daemon` passed in the Azul Java 17 container; `docker compose config --quiet` passed.
+- Removed the unsupported `spring.jackson.generator.write-end-of-line-after-value` setting from the user's
+  `application.properties`; retained their `spring.jackson.serialization.indent-output=true` setting. No functional test
+  edits.
+- Converted the H2 Spring test profile from `application-test.yml` to equivalent `application-test.properties`;
+  non-Spring YAML remains unchanged.
+- Changed hunk: the deleted unsupported generator property was agent-modified; the remaining properties and existing
+  formatting configuration are unchanged.
+- Verification: `./gradlew clean build --no-daemon` passed in the Azul Java 17 container;
+  `docker compose config --quiet` passed.
 
 ## AI AGENT BUILD: Minimal Spring Boot persistence proof
 
 - Commit: `37981213caf0c20b8eb6f19ad97768d1f14c69e3` (`AI AGENT BUILD: Minimal Spring Boot persistence proof`).
-- Replaced the console demo with Spring Boot startup and a minimal one-value JPA record, repository, service, and controller. Added a Flyway migration, PostgreSQL runtime configuration, H2 functional-test configuration, executable Boot JAR packaging, and a single HTTP save/fetch functional test. Updated Docker Compose, the Dockerfile, Gradle dependency locks, and README usage notes.
-- Changed source hunks: implementation and test logic below was added by the agent, replacing the original demo/sample tests. The user subsequently renamed the test classes to match their `Sample*Test.java` filenames; those two class declaration lines are human-authored. Formatting-only edits are excluded from attribution.
+- Replaced the console demo with Spring Boot startup and a minimal one-value JPA record, repository, service, and
+  controller. Added a Flyway migration, PostgreSQL runtime configuration, H2 functional-test configuration, executable
+  Boot JAR packaging, and a single HTTP save/fetch functional test. Updated Docker Compose, the Dockerfile, Gradle
+  dependency locks, and README usage notes.
+- Changed source hunks: implementation and test logic below was added by the agent, replacing the original demo/sample
+  tests. The user subsequently renamed the test classes to match their `Sample*Test.java` filenames; those two class
+  declaration lines are human-authored. Formatting-only edits are excluded from attribution.
 - Per-file snapshots:
   - File: `src/main/java/com/bu/Application.java` — Agent lines: 9; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/model/PersistenceRecord.java` — Agent lines: 32; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/repository/PersistenceRecordRepository.java` — Agent lines: 6; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/service/persistenceprobe/featureservice/PersistenceRecordService.java` — Agent lines: 24; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/service/persistenceprobe/controller/PersistenceRecordController.java` — Agent lines: 44; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/model/PersistenceRecord.java` — Agent lines: 32; Human lines: 0; Agent: 100%; Human:
+    0%
+  - File: `src/main/java/com/bu/repository/PersistenceRecordRepository.java` — Agent lines: 6; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `src/main/java/com/bu/service/persistenceprobe/featureservice/PersistenceRecordService.java` — Agent lines:
+    24; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/persistenceprobe/controller/PersistenceRecordController.java` — Agent lines:
+    44; Human lines: 0; Agent: 100%; Human: 0%
   - File: `src/test/java/com/bu/SampleUnitTest.java` — Agent lines: 25; Human lines: 1; Agent: 96%; Human: 4%
-  - File: `src/functionaltest/java/com/bu/service/SampleFunctionalTest.java` — Agent lines: 36; Human lines: 1; Agent: 97%; Human: 3%
-  - File: `src/main/resources/db/migration/V1__create_persistence_records.sql` — Agent lines: 4; Human lines: 0; Agent: 100%; Human: 0%
-- Verification: `./gradlew clean build --no-daemon` passed in the Azul Java 17 container; `docker compose config --quiet` and `docker compose build` succeeded. A temporary PostgreSQL 16 container smoke test also started the built app, applied the Flyway migration, and passed HTTP save/fetch; the temporary containers and network were removed afterward.
+  - File: `src/functionaltest/java/com/bu/service/SampleFunctionalTest.java` — Agent lines: 36; Human lines: 1; Agent:
+    97%; Human: 3%
+  - File: `src/main/resources/db/migration/V1__create_persistence_records.sql` — Agent lines: 4; Human lines: 0;
+    Agent: 100%; Human: 0%
+- Verification: `./gradlew clean build --no-daemon` passed in the Azul Java 17 container;
+  `docker compose config --quiet` and `docker compose build` succeeded. A temporary PostgreSQL 16 container smoke test
+  also started the built app, applied the Flyway migration, and passed HTTP save/fetch; the temporary containers and
+  network were removed afterward.
 - Human modifications: none reported.
 
 ## AI AGENT BUILD: Deferred artifact vertical slice
 
-- Version: retained in Git stash `4250b77d6eb061e58a2db53fea61febcd65a8e0b` (`stash@{0}`), not in the active working tree.
-- Before the scope was reduced, implemented a Git repository artifact entity/API slice with JPA inheritance, DTOs, service, controller, H2 test, and related PostgreSQL/Flyway configuration. The user requested a one-field persistence proof for this release; this implementation is preserved for possible later use.
-- Changed source hunks: all current source hunks in the stashed files below were agent-authored; no human modifications were reported.
+- Version: retained in Git stash `4250b77d6eb061e58a2db53fea61febcd65a8e0b` (`stash@{0}`), not in the active working
+  tree.
+- Before the scope was reduced, implemented a Git repository artifact entity/API slice with JPA inheritance, DTOs,
+  service, controller, H2 test, and related PostgreSQL/Flyway configuration. The user requested a one-field persistence
+  proof for this release; this implementation is preserved for possible later use.
+- Changed source hunks: all current source hunks in the stashed files below were agent-authored; no human modifications
+  were reported.
 - Stashed per-file snapshots:
   - File: `src/main/java/com/bu/Application.java` — Agent lines: 9; Human lines: 0; Agent: 100%; Human: 0%
   - File: `src/main/java/com/bu/model/Artifact.java` — Agent lines: 72; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/repository/GitRepositoryArtifactRepository.java` — Agent lines: 6; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/service/repositoryindexer/api/GitRepositoryArtifactRequest.java` — Agent lines: 14; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/service/repositoryindexer/api/GitRepositoryArtifactResponse.java` — Agent lines: 17; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/service/repositoryindexer/controller/GitRepositoryArtifactController.java` — Agent lines: 38; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/service/repositoryindexer/entity/GitRepositoryArtifact.java` — Agent lines: 63; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/GitRepositoryArtifactService.java` — Agent lines: 55; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/repository/GitRepositoryArtifactRepository.java` — Agent lines: 6; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/GitRepositoryArtifactRequest.java` — Agent lines: 14;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/GitRepositoryArtifactResponse.java` — Agent lines: 17;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/controller/GitRepositoryArtifactController.java` — Agent
+    lines: 38; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/GitRepositoryArtifact.java` — Agent lines: 63; Human
+    lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/GitRepositoryArtifactService.java` — Agent
+    lines: 55; Human lines: 0; Agent: 100%; Human: 0%
   - File: `src/test/java/com/bu/UnitTest.java` — Agent lines: 46; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/functionaltest/java/com/bu/service/FunctionalTest.java` — Agent lines: 51; Human lines: 0; Agent: 100%; Human: 0%
-  - File: `src/main/resources/db/migration/V1__create_artifacts.sql` — Agent lines: 14; Human lines: 0; Agent: 100%; Human: 0%
-- Verification before shelving: the Gradle clean build and functional test passed. The final validation for this release is recorded in the minimal persistence entry above.
+  - File: `src/functionaltest/java/com/bu/service/FunctionalTest.java` — Agent lines: 51; Human lines: 0; Agent: 100%;
+    Human: 0%
+  - File: `src/main/resources/db/migration/V1__create_artifacts.sql` — Agent lines: 14; Human lines: 0; Agent: 100%;
+    Human: 0%
+- Verification before shelving: the Gradle clean build and functional test passed. The final validation for this release
+  is recorded in the minimal persistence entry above.
 - Human modifications: none reported.
 
 ## AI AGENT BUILD: Spec attribution correction
 
-- Updated `spec.md` attribution header to reflect that the current file is baseline human-authored documentation rather than AI-generated content, matching the repository's contribution accounting guidance for files without a retained AI-authored history.
+- Updated `spec.md` attribution header to reflect that the current file is baseline human-authored documentation rather
+  than AI-generated content, matching the repository's contribution accounting guidance for files without a retained
+  AI-authored history.
 - Per-file snapshot: `File: spec.md — Agent lines: 0; Human lines: 0; Agent: 0%; Human: 100%`.
 - Human modifications: none reported for this header correction.
 
 ## AI AGENT BUILD: DevSecOps workflow non-blocking
 
 - Commit: `cb6ee8d` (`AI AGENT BUILD: DevSecOps attribution and non-blocking workflow`).
-- Updated `.github/workflows/devsecops.yml` so the Semgrep SAST and Trivy scan steps continue on findings instead of failing the GitHub Actions job, while still logging results and preserving scan coverage.
-- Verification: the workflow YAML parsed successfully with PyYAML after installing the missing dependency in the environment.
-- Human modifications: the user committed Trivy `exit-code: '0'` settings to make dependency and image findings non-blocking. The workflow attribution header was updated to 80% Agent Generated / 20% Human Refactored to reflect the final contributions.
+- Updated `.github/workflows/devsecops.yml` so the Semgrep SAST and Trivy scan steps continue on findings instead of
+  failing the GitHub Actions job, while still logging results and preserving scan coverage.
+- Verification: the workflow YAML parsed successfully with PyYAML after installing the missing dependency in the
+  environment.
+- Human modifications: the user committed Trivy `exit-code: '0'` settings to make dependency and image findings
+  non-blocking. The workflow attribution header was updated to 80% Agent Generated / 20% Human Refactored to reflect the
+  final contributions.
 
 ## AI AGENT BUILD: DevSecOps GitHub Actions pipeline
 
-- Added `.github/workflows/devsecops.yml` to build the Docker image on pushes and pull requests, scan Gradle dependencies and the built image with Trivy (failing on HIGH and CRITICAL findings), and run Semgrep SAST. Third-party actions and the Semgrep image are pinned to immutable references.
+- Added `.github/workflows/devsecops.yml` to build the Docker image on pushes and pull requests, scan Gradle
+  dependencies and the built image with Trivy (failing on HIGH and CRITICAL findings), and run Semgrep SAST. Third-party
+  actions and the Semgrep image are pinned to immutable references.
 - Enabled Gradle dependency locking in `build.gradle` and committed the lockfile consumed by the Docker build and Trivy.
-- Verification: Docker image build succeeded; actionlint passed; Semgrep reported zero findings; Trivy dependency and image scans reported zero HIGH/CRITICAL vulnerabilities.
+- Verification: Docker image build succeeded; actionlint passed; Semgrep reported zero findings; Trivy dependency and
+  image scans reported zero HIGH/CRITICAL vulnerabilities.
 - Human modifications: none reported for this change.
 
 ## AI AGENT BUILD: Azul Java 17 toolchain
 
 - Updated `build.gradle` to require the Azul vendor's Java 17 toolchain for compilation and tests.
-- Updated `Agent_environment.md` to prominently identify Azul Zulu JDK 17 as the user's installed Java runtime and configured build toolchain.
+- Updated `Agent_environment.md` to prominently identify Azul Zulu JDK 17 as the user's installed Java runtime and
+  configured build toolchain.
 - Human modifications: none reported for this change.
+
+## AI AGENT BUILD: Domain 1 project and artifact service
+
+- Working-tree change (uncommitted).
+- Replaced the single-value persistence probe with the master-spec project lifecycle and nested repository, manuscript,
+  video, academic-unit, manuscript-file, search, soft-delete, and purge APIs. Added local `dev`/`test` academic-unit
+  fixtures, epoch-millisecond timestamps, database-backed manuscript file data, and an HTTP-level functional test.
+- Updated `spec.md` to the master design and the user's clarified happy-path decisions. Updated the README and removed
+  the implicit `dev` profile. Preserved Flyway V1 and added V2 to replace the probe table with the Domain 1 schema,
+  avoiding a V1 checksum change for existing local databases. Removed the unused validation starter and its lock
+  entries.
+- Agent-authored source hunks: all new Domain 1 API, entity, repository, controller, service, and fixture-loader code;
+  all new lines in the functional test except its retained class declaration; and the V2 migration. Removed the
+  persistence probe source files and its unit test. The unchanged V1 migration and `Application.java` were not modified.
+- Follow-up working-tree hunk in `ArtifactService.java`: added explicit checked-`IOException` rollback behavior for
+  manuscript upload and ZIP download, and changed the file-download wrapper from a record to a class to avoid record
+  array-identity equality semantics. These lines are agent-authored.
+- Per-file snapshots (contribution header excluded; retained substantive logical lines):
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/Artifact.java` — Agent lines: 89; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/ArtifactType.java` — Agent lines: 27; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/AcademicUnit.java` — Agent lines: 52; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/Project.java` — Agent lines: 62; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/ProjectMember.java` — Agent lines: 38; Human lines:
+    0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/ManuscriptFile.java` — Agent lines: 46; Human lines:
+    0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/entity/ManuscriptFileData.java` — Agent lines: 36; Human
+    lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/ProjectApi.java` — Agent lines: 42; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/ArtifactApi.java` — Agent lines: 93; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/api/AcademicUnitApi.java` — Agent lines: 14; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/controller/ProjectController.java` — Agent lines: 75; Human
+    lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/controller/ArtifactController.java` — Agent lines: 186;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/controller/AcademicUnitController.java` — Agent lines: 33;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/ProjectService.java` — Agent lines: 195;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/ArtifactService.java` — Agent lines: 305;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/AcademicUnitService.java` — Agent lines: 36;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/service/repositoryindexer/config/AcademicUnitFixtureLoader.java` — Agent lines: 59;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/main/java/com/bu/repository/ProjectRepository.java` — Agent lines: 11; Human lines: 0; Agent: 100%;
+    Human: 0%
+  - File: `src/main/java/com/bu/repository/ArtifactRepository.java` — Agent lines: 23; Human lines: 0; Agent: 100%;
+    Human: 0%
+  - File: `src/main/java/com/bu/repository/AcademicUnitRepository.java` — Agent lines: 10; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/SampleFunctionalTest.java` — Agent lines: 328; Human lines: 1;
+    Agent: 100%; Human: 0%
+  - File: `src/main/resources/db/migration/V2__create_project_artifact_catalog.sql` — Agent lines: 71; Human lines: 0;
+    Agent: 100%; Human: 0%
+- Deleted source snapshots:
+  - File: `src/main/java/com/bu/model/PersistenceRecord.java` — Agent lines: 0; Human lines: 0; Agent: 0%; Human: 100%
+  - File: `src/main/java/com/bu/repository/PersistenceRecordRepository.java` — Agent lines: 0; Human lines: 0; Agent:
+    0%; Human: 100%
+  - File: `src/main/java/com/bu/service/persistenceprobe/controller/PersistenceRecordController.java` — Agent lines:
+    0; Human lines: 0; Agent: 0%; Human: 100%
+  - File: `src/main/java/com/bu/service/persistenceprobe/featureservice/PersistenceRecordService.java` — Agent lines:
+    0; Human lines: 0; Agent: 0%; Human: 100%
+  - File: `src/test/java/com/bu/SampleUnitTest.java` — Agent lines: 0; Human lines: 0; Agent: 0%; Human: 100%
+- `Prompt_test_log.md` now contains Prompt 7 with the available exact user request and clarification/choice responses.
+- Verification status: IntelliJ diagnostics reported no compile errors in the implementation and functional test; a
+  non-blocking inspection warning remains on the array-valued file-download content. Direct Gradle execution was blocked
+  because the command runner required interactive approval and no user response was available; the alternate test-runner
+  attempt failed before execution because its model was unsupported. The build and functional test therefore remain
+  unverified.
+- Human modifications: none reported.
+
+## AI AGENT BUILD: Focused A2 test suites and container verification
+
+- Working-tree change (uncommitted).
+- Replaced the monolithic `SampleFunctionalTest` with project lifecycle/search, artifact CRUD, and manuscript-file
+  functional test classes plus a small shared fixture helper. Added direct `ProjectService` tests for revision behavior
+  and `ArtifactService` tests for manuscript file creation, replacement, and deletion.
+- Functional GET tests exposed a lazy-initialization failure for manuscript authors/keywords. `ArtifactService` now
+  copies both collections inside its transaction before returning the response.
+- Updated the Docker builder to run `check bootJar`, removed Compose's fixed application container name so test stacks
+  can be isolated by Compose project, and regenerated Gradle locks to remove stale compile-classpath scopes.
+- Agent-authored hunks: all new test/helper source, deletion of the previous functional test, the `ArtifactService`
+  response mapping change, and the Dockerfile/Compose changes. The lockfile was regenerated by Gradle. No human edits.
+- Per-file source snapshots (contribution header excluded; retained substantive logical lines):
+  - File: `src/main/java/com/bu/service/repositoryindexer/featureservice/ArtifactService.java` — Agent lines: 306; Human
+    lines: 0; Agent: 100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/FunctionalTestSupport.java` — Agent lines: 42; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ProjectFunctionalTest.java` — Agent lines: 121; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ArtifactFunctionalTest.java` — Agent lines: 190; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ManuscriptFileFunctionalTest.java` — Agent lines: 157; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/service/repositoryindexer/featureservice/ProjectServiceTest.java` — Agent lines: 66;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/service/repositoryindexer/featureservice/ArtifactServiceTest.java` — Agent lines: 98;
+    Human lines: 0; Agent: 100%; Human: 0%
+- Deleted source snapshot:
+  - File: `src/functionaltest/java/com/bu/service/SampleFunctionalTest.java` — Agent lines: 0; Human lines: 0; Agent:
+    0%; Human: 100%
+- Verification: Docker image build ran `check bootJar` successfully (3 functional and 4 unit tests). A Compose
+  PostgreSQL
+  smoke test created and read project/artifact/manuscript data, uploaded/downloaded file bytes, restarted the app
+  container, and confirmed the project, artifact, and file persisted. The isolated test containers and volume were
+  removed. `git diff --check` and Compose config validation passed.
+- User prompt recorded verbatim in `Prompt_test_log.md` as Prompt 8.
 
 ## AI AGENT BUILD: Agent environment draft
 
@@ -126,3 +283,54 @@
   limits, remain marked TBD.
 - Human modifications: none, as confirmed by the user.
 - Verification reported in the originating chat: `git diff --check` passed.
+
+## AI AGENT BUILD: A2 master requirement test coverage
+
+- Working-tree change (uncommitted).
+- Audited the master Domain 1 requirements against `spec.md`, both REST controllers, services, and test suites. Expanded
+  functional tests to cover project response fields and unit associations, both optional time bounds, purge of a project
+  with an artifact, every artifact type's create/list/read/update/delete/search path, and ZIP contents for multiple
+  active files, manuscripts without files, deleted manuscripts, and empty archives.
+- Expanded manuscript checks for the current SHA-256, filename, media type, download headers, and downloaded bytes.
+  Added a `ProjectService` unit test for case-insensitive keyword matching, inclusive/independent time bounds, ANDed
+  academic filters, artifact-type filtering, and response associations.
+- Agent-authored hunks: all additions to `ProjectFunctionalTest.java`, `ArtifactFunctionalTest.java`,
+  `ManuscriptFileFunctionalTest.java`, and `ProjectServiceTest.java`. Headers remain 100% agent-generated.
+- Per-file source snapshots (contribution header excluded; retained substantive logical lines):
+  - File: `src/functionaltest/java/com/bu/service/ProjectFunctionalTest.java` — Agent lines: 174; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ArtifactFunctionalTest.java` — Agent lines: 249; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ManuscriptFileFunctionalTest.java` — Agent lines: 254; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/service/repositoryindexer/featureservice/ProjectServiceTest.java` — Agent lines: 107;
+    Human lines: 0; Agent: 100%; Human: 0%
+- Verification: Docker image build completed `check bootJar` successfully. The suite contains 3 HTTP functional tests
+  and 5 unit tests. `git diff --check` passed; Compose configuration validated. User prompt recorded verbatim as Prompt
+  9.
+
+## AI AGENT BUILD: Focused A2 test behaviors
+
+- Working-tree change (uncommitted).
+- Refactored broad functional methods into focused behaviors: project create/read, academic-unit listings, association
+  and scalar updates, separate time-bound searches, combined search criteria, soft deletion, and purge; CRUD operations
+  for each artifact type; artifact listing and search; and manuscript-file create, replace, download, delete, ZIP
+  selection, and empty ZIP cases.
+- Split the combined `ProjectService.search` unit test into keyword, academic-unit, artifact-type, lower/upper time
+  bound, and one-sided time-range tests. Split manuscript-file upload unit coverage into create and replace cases.
+- Agent-authored hunks: all changes in the five test source files below. Contribution headers remain 100%
+  agent-generated.
+- Per-file source snapshots (contribution header excluded; retained substantive logical lines):
+  - File: `src/functionaltest/java/com/bu/service/ProjectFunctionalTest.java` — Agent lines: 242; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ArtifactFunctionalTest.java` — Agent lines: 345; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ManuscriptFileFunctionalTest.java` — Agent lines: 251; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/service/repositoryindexer/featureservice/ProjectServiceTest.java` — Agent lines: 146;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/service/repositoryindexer/featureservice/ArtifactServiceTest.java` — Agent lines: 136;
+    Human lines: 0; Agent: 100%; Human: 0%
+- Verification: Docker `check bootJar` passed with 33 functional and 12 unit test methods. An initial run caught an
+  incorrect expected SHA-256 literal in the replacement unit test; after correcting the digest, the full build passed.
+  `git diff --check` and Compose configuration validation passed. User prompt recorded verbatim as Prompt 10.
