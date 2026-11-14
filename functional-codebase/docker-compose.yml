@@ -1,0 +1,38 @@
+# A2 functional baseline: Java 17, Spring Boot 3.3.5, Gradle 9.6.0.
+# Agent Contribution Weight: [100%] Agent Generated / [0%] Human Refactored.
+# Human verification: Done
+
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-projectportal}
+      POSTGRES_USER: ${DB_USERNAME:-projectportal}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-projectportal-local}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  artifact-indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${DB_NAME:-projectportal}
+      DB_USERNAME: ${DB_USERNAME:-projectportal}
+      DB_PASSWORD: ${DB_PASSWORD:-projectportal-local}
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

@@ -1,0 +1,7 @@
+/*
+ * A2 functional baseline: Java 17, Spring Boot 3.3.5, Gradle 9.6.0.
+ * Agent Contribution Weight: [100%] Agent Generated / [0%] Human Refactored.
+ * Human verification: Done
+ */
+
+rootProject.name = 'project-portal'
