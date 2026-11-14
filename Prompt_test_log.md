@@ -983,3 +983,8 @@ containsers*
 
 *User prompt: verify all the functional requiremtns have been implemented and tested via unit and functional: C:
 \Users\arsh\Downloads\ProjectPortalDomainServices.md*
+
+### Prompt 10 **Focused Test Method Responsibilities**
+
+*User prompt: what are you doing in the test methods. They don't follow industry standard where each test method focues
+on a single (generally) logic/flow. And unit test methods should focue on specific logic of method.*

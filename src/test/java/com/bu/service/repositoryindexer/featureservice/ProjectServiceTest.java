@@ -80,8 +80,81 @@ class ProjectServiceTest
     }
 
     @Test
-    void searchAppliesInclusiveOptionalTimeBoundsAndAllAcademicFilters()
+    void searchMatchesKeywordWithoutCaseSensitivity()
     {
+        givenSearchableProject();
+
+        assertThat( service.search( "EDGE", null, null, null, null, null, null ) ).hasSize( 1 );
+    }
+
+    @Test
+    void searchRequiresEveryRequestedAcademicUnit() {
+        Project project = givenSearchableProject();
+        UUID labId = project.getAcademicUnits().get( 0 ).getId();
+        UUID departmentId = project.getAcademicUnits().get( 1 ).getId();
+        UUID courseId = project.getAcademicUnits().get( 2 ).getId();
+
+        List<ProjectResponse> matches = service.search(
+                null, labId, departmentId, courseId, null, null, null
+        );
+
+        assertThat( matches ).hasSize( 1 );
+        assertThat( matches.get( 0 ).labIds() ).containsExactly( labId );
+        assertThat( matches.get( 0 ).departmentIds() ).containsExactly( departmentId );
+        assertThat( matches.get( 0 ).courseIds() ).containsExactly( courseId );
+        assertThat( service.search( null, UUID.randomUUID(), departmentId, courseId, null, null, null ) )
+                .isEmpty();
+    }
+
+    @Test
+    void searchMatchesRequestedArtifactType() {
+        givenSearchableProject();
+
+        assertThat( service.search( null, null, null, null, ArtifactType.MANUSCRIPTS, null, null ) )
+                .hasSize( 1 );
+        assertThat( service.search( null, null, null, null, ArtifactType.VIDEOS, null, null ) )
+                .isEmpty();
+    }
+
+    @Test
+    void searchIncludesCreatedFromBoundaryAndExcludesLaterBound() {
+        givenSearchableProject();
+
+        assertThat( service.search( null, null, null, null, null, 100L, null ) ).hasSize( 1 );
+        assertThat( service.search( null, null, null, null, null, 101L, null ) ).isEmpty();
+    }
+
+    @Test
+    void searchIncludesCreatedToBoundaryAndExcludesEarlierBound() {
+        givenSearchableProject();
+
+        assertThat( service.search( null, null, null, null, null, null, 100L ) ).hasSize( 1 );
+        assertThat( service.search( null, null, null, null, null, null, 99L ) ).isEmpty();
+    }
+
+    @Test
+    void searchAllowsCreatedFromWithoutCreatedTo() {
+        givenSearchableProject();
+
+        assertThat( service.search( null, null, null, null, null, 99L, null ) ).hasSize( 1 );
+    }
+
+    @Test
+    void searchAllowsCreatedToWithoutCreatedFrom() {
+        givenSearchableProject();
+
+        assertThat( service.search( null, null, null, null, null, null, 101L ) ).hasSize( 1 );
+    }
+
+    private ProjectRequest request( String title, String description )
+    {
+        return new ProjectRequest(
+                title, description, List.of( new MemberRequest( "member-001", "student" ) ),
+                List.of(), List.of(), List.of()
+        );
+    }
+
+    private Project givenSearchableProject() {
         UUID labId = UUID.randomUUID();
         UUID departmentId = UUID.randomUUID();
         UUID courseId = UUID.randomUUID();
@@ -95,34 +168,6 @@ class ProjectServiceTest
         manuscript.setTitle( "Learning at the edge" );
         project.getArtifacts().add( manuscript );
         when( projects.findAllByDeleted( 0 ) ).thenReturn( List.of( project ) );
-
-        List<ProjectResponse> matches = service.search(
-                "EDGE",
-                labId,
-                departmentId,
-                courseId,
-                ArtifactType.MANUSCRIPTS,
-                100L,
-                100L
-        );
-
-        assertThat( matches ).hasSize( 1 );
-        assertThat( matches.get( 0 ).labIds() ).containsExactly( labId );
-        assertThat( matches.get( 0 ).departmentIds() ).containsExactly( departmentId );
-        assertThat( matches.get( 0 ).courseIds() ).containsExactly( courseId );
-        assertThat( service.search( null, UUID.randomUUID(), departmentId, courseId, null, null, null ) )
-                .isEmpty();
-        assertThat( service.search( null, null, null, null, null, 100L, null ) ).hasSize( 1 );
-        assertThat( service.search( null, null, null, null, null, null, 100L ) ).hasSize( 1 );
-        assertThat( service.search( null, null, null, null, null, 101L, null ) ).isEmpty();
-        assertThat( service.search( null, null, null, null, null, null, 99L ) ).isEmpty();
-    }
-
-    private ProjectRequest request( String title, String description )
-    {
-        return new ProjectRequest(
-                title, description, List.of( new MemberRequest( "member-001", "student" ) ),
-                List.of(), List.of(), List.of()
-        );
+        return project;
     }
 }

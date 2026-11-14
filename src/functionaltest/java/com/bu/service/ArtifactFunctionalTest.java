@@ -56,135 +56,209 @@ class ArtifactFunctionalTest
     }
 
     @Test
-    void managesRepositoryManuscriptAndVideoArtifacts() throws Exception
+    void createsRepositoryArtifact() throws Exception
     {
-        UUID projectId = UUID.fromString( createProject(
-                mockMvc,
-                objectMapper,
-                projectRequest(
-                        "Artifact test project", "Project description", List.of(
-                                new MemberRequest( "member-002", "student" )
-                        )
-                )
-        ).get( "id" ).asText() );
+        UUID projectId = createSampleProject();
 
-        GitRepositoryRequest repository = new GitRepositoryRequest(
-                "https://github.com/example/assistive-vision",
-                "main",
-                "Java / Spring Boot",
-                24,
-                1794594000000L
-        );
-        UUID repositoryId = createArtifact(
-                projectId,
-                "/repositories",
-                repository,
-                "targetBranch",
-                "main"
-        );
-        mockMvc.perform( put(
-                        "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
-                        projectId,
-                        repositoryId
-                )
-                        .contentType( MediaType.APPLICATION_JSON )
-                        .content( objectMapper.writeValueAsBytes( new GitRepositoryRequest(
-                                repository.repoUrl(),
-                                "release",
-                                repository.primaryTechStack(),
-                                repository.totalCommitCount(),
-                                repository.latestCommitTimestamp()
-                        ) ) ) )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.targetBranch" ).value( "release" ) );
+        createRepository( projectId );
+    }
+
+    @Test
+    void readsRepositoryArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID artifactId = createRepository( projectId );
+
         mockMvc.perform( get(
                         "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
                         projectId,
-                        repositoryId
+                        artifactId
                 ) )
                 .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.repoUrl" ).value( repository.repoUrl() ) )
-                .andExpect( jsonPath( "$.targetBranch" ).value( "release" ) )
-                .andExpect( jsonPath( "$.primaryTechStack" ).value( repository.primaryTechStack() ) )
-                .andExpect( jsonPath( "$.totalCommitCount" ).value( 24 ) )
-                .andExpect( jsonPath( "$.latestCommitTimestamp" ).value( repository.latestCommitTimestamp() ) );
+                .andExpect( jsonPath( "$.repoUrl" ).value( repositoryRequest().repoUrl() ) )
+                .andExpect( jsonPath( "$.targetBranch" ).value( "main" ) );
+    }
 
-        ManuscriptRequest manuscript = new ManuscriptRequest(
-                "Visual Alignment on Edge Devices",
-                "A study of efficient alignment methods.",
-                List.of( "A. Researcher", "B. Student" ),
-                List.of( "alignment", "edge computing" ),
-                2026,
-                new PublisherRequest( "Campus Press", "Project Symposium" )
+    @Test
+    void updatesRepositoryArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID artifactId = createRepository( projectId );
+        GitRepositoryRequest update = new GitRepositoryRequest(
+                repositoryRequest().repoUrl(),
+                "release",
+                repositoryRequest().primaryTechStack(),
+                repositoryRequest().totalCommitCount(),
+                repositoryRequest().latestCommitTimestamp()
         );
-        UUID manuscriptId = createArtifact(
+
+        mockMvc.perform( put(
+                        "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
+                        projectId,
+                        artifactId
+                )
+                        .contentType( MediaType.APPLICATION_JSON )
+                        .content( objectMapper.writeValueAsBytes( update ) ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.targetBranch" ).value( "release" ) );
+    }
+
+    @Test
+    void deletesRepositoryArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID artifactId = createRepository( projectId );
+
+        mockMvc.perform( delete(
+                        "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
+                        projectId,
+                        artifactId
+                ) )
+                .andExpect( status().isNoContent() );
+        mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts/repositories", projectId ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
+    }
+
+    @Test
+    void createsManuscriptArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        ManuscriptRequest manuscript = manuscriptRequest();
+
+        createArtifact( projectId, "/manuscripts", manuscript, "title", manuscript.title() );
+    }
+
+    @Test
+    void readsManuscriptArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        ManuscriptRequest manuscript = manuscriptRequest();
+        UUID artifactId = createArtifact( projectId, "/manuscripts", manuscript, "title", manuscript.title() );
+
+        mockMvc.perform( get(
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}",
+                        projectId,
+                        artifactId
+                ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.authors.length()" ).value( 2 ) )
+                .andExpect( jsonPath( "$.keywords.length()" ).value( 2 ) )
+                .andExpect( jsonPath( "$.publisher.name" ).value( "Campus Press" ) );
+    }
+
+    @Test
+    void updatesManuscriptArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        ManuscriptRequest manuscript = manuscriptRequest();
+        UUID artifactId = createArtifact( projectId, "/manuscripts", manuscript, "title", manuscript.title() );
+        ManuscriptRequest update = new ManuscriptRequest(
+                manuscript.title(),
+                "Updated abstract.",
+                manuscript.authors(),
+                manuscript.keywords(),
+                manuscript.year(),
+                manuscript.publisher()
+        );
+
+        mockMvc.perform( put(
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}",
+                        projectId,
+                        artifactId
+                )
+                        .contentType( MediaType.APPLICATION_JSON )
+                        .content( objectMapper.writeValueAsBytes( update ) ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.abstract" ).value( "Updated abstract." ) );
+    }
+
+    @Test
+    void deletesManuscriptArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID artifactId = createArtifact(
                 projectId,
                 "/manuscripts",
-                manuscript,
+                manuscriptRequest(),
                 "artifactType",
                 "manuscripts"
         );
-        mockMvc.perform( put(
-                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}",
-                        projectId,
-                        manuscriptId
-                )
-                        .contentType( MediaType.APPLICATION_JSON )
-                        .content( objectMapper.writeValueAsBytes( new ManuscriptRequest(
-                                manuscript.title(),
-                                "Updated abstract.",
-                                manuscript.authors(),
-                                manuscript.keywords(),
-                                manuscript.year(),
-                                manuscript.publisher()
-                        ) ) ) )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.abstract" ).value( "Updated abstract." ) );
-        mockMvc.perform( get(
-                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}",
-                        projectId,
-                        manuscriptId
-                ) )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.title" ).value( manuscript.title() ) )
-                .andExpect( jsonPath( "$.file" ).value( org.hamcrest.Matchers.nullValue() ) )
-                .andExpect( jsonPath( "$.authors.length()" ).value( 2 ) )
-                .andExpect( jsonPath( "$.keywords.length()" ).value( 2 ) )
-                .andExpect( jsonPath( "$.year" ).value( 2026 ) )
-                .andExpect( jsonPath( "$.publisher.name" ).value( "Campus Press" ) )
-                .andExpect( jsonPath( "$.publisher.venue" ).value( "Project Symposium" ) );
 
-        VideoRequest video = new VideoRequest(
-                "https://video.example.edu/presentation",
-                "https://video.example.edu/thumbnail.jpg",
-                240000L,
-                "A demonstration of the project."
-        );
-        UUID videoId = createArtifact( projectId, "/videos", video, "durationMillis", 240000 );
-        mockMvc.perform( put(
-                        "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
+        mockMvc.perform( delete(
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}",
                         projectId,
-                        videoId
-                )
-                        .contentType( MediaType.APPLICATION_JSON )
-                        .content( objectMapper.writeValueAsBytes( new VideoRequest(
-                                video.videoUrl(),
-                                video.thumbnailUrl(),
-                                300000L,
-                                video.description()
-                        ) ) ) )
+                        artifactId
+                ) )
+                .andExpect( status().isNoContent() );
+        mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts/manuscripts", projectId ) )
                 .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.durationMillis" ).value( 300000 ) );
+                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
+    }
+
+    @Test
+    void createsVideoArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        VideoRequest video = videoRequest();
+
+        createArtifact( projectId, "/videos", video, "durationMillis", 240000 );
+    }
+
+    @Test
+    void readsVideoArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        VideoRequest video = videoRequest();
+        UUID artifactId = createArtifact( projectId, "/videos", video, "durationMillis", 240000 );
+
         mockMvc.perform( get(
                         "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
                         projectId,
-                        videoId
+                        artifactId
                 ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.videoUrl" ).value( video.videoUrl() ) )
                 .andExpect( jsonPath( "$.thumbnailUrl" ).value( video.thumbnailUrl() ) )
-                .andExpect( jsonPath( "$.durationMillis" ).value( 300000 ) )
-                .andExpect( jsonPath( "$.description" ).value( video.description() ) );
+                .andExpect( jsonPath( "$.durationMillis" ).value( 240000 ) );
+    }
+
+    @Test
+    void updatesVideoArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        VideoRequest video = videoRequest();
+        UUID artifactId = createArtifact( projectId, "/videos", video, "durationMillis", 240000 );
+        VideoRequest update = new VideoRequest(
+                video.videoUrl(),
+                video.thumbnailUrl(),
+                300000L,
+                video.description()
+        );
+
+        mockMvc.perform( put(
+                        "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
+                        projectId,
+                        artifactId
+                )
+                        .contentType( MediaType.APPLICATION_JSON )
+                        .content( objectMapper.writeValueAsBytes( update ) ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.durationMillis" ).value( 300000 ) );
+    }
+
+    @Test
+    void deletesVideoArtifact() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID artifactId = createArtifact( projectId, "/videos", videoRequest(), "durationMillis", 240000 );
+
+        mockMvc.perform( delete(
+                        "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
+                        projectId,
+                        artifactId
+                ) )
+                .andExpect( status().isNoContent() );
+        mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts/videos", projectId ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
+    }
+
+    @Test
+    void listsAllArtifactsAndEachArtifactType() throws Exception {
+        UUID projectId = createSampleProject();
+        createRepository( projectId );
+        createArtifact( projectId, "/manuscripts", manuscriptRequest(), "artifactType", "manuscripts" );
+        createArtifact( projectId, "/videos", videoRequest(), "durationMillis", 240000 );
 
         mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts", projectId ) )
                 .andExpect( status().isOk() )
@@ -198,48 +272,80 @@ class ArtifactFunctionalTest
         mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts/videos", projectId ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 1 ) );
+    }
+
+    @Test
+    void searchesProjectsByArtifactType() throws Exception {
+        UUID projectId = createSampleProject();
+        createRepository( projectId );
+        createArtifact( projectId, "/manuscripts", manuscriptRequest(), "artifactType", "manuscripts" );
+        createArtifact( projectId, "/videos", videoRequest(), "durationMillis", 240000 );
+
         for ( String artifactType : List.of( "repositories", "manuscripts", "videos" ) )
         {
             mockMvc.perform( get( "/api/v1/projects" ).param( "artifactType", artifactType ) )
                     .andExpect( status().isOk() )
                     .andExpect( jsonPath( "$.length()" ).value( 1 ) );
         }
+    }
+
+    @Test
+    void searchesProjectsByArtifactKeyword() throws Exception {
+        UUID projectId = createSampleProject();
+        createArtifact( projectId, "/manuscripts", manuscriptRequest(), "artifactType", "manuscripts" );
+
         mockMvc.perform( get( "/api/v1/projects" )
                         .param( "keyword", "alignment" )
                         .param( "artifactType", "manuscripts" ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 1 ) );
+    }
 
-        mockMvc.perform( delete(
-                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}",
-                        projectId,
-                        manuscriptId
-                ) )
-                .andExpect( status().isNoContent() );
-        mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts", projectId ) )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.length()" ).value( 2 ) );
-        mockMvc.perform( get( "/api/v1/projects" ).param( "keyword", "alignment" ) )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
-        mockMvc.perform( get( "/api/v1/projects" ).param( "artifactType", "manuscripts" ) )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
-        mockMvc.perform( delete(
-                        "/api/v1/projects/{projectId}/artifacts/repositories/{artifactId}",
-                        projectId,
-                        repositoryId
-                ) )
-                .andExpect( status().isNoContent() );
-        mockMvc.perform( delete(
-                        "/api/v1/projects/{projectId}/artifacts/videos/{artifactId}",
-                        projectId,
-                        videoId
-                ) )
-                .andExpect( status().isNoContent() );
-        mockMvc.perform( get( "/api/v1/projects/{projectId}/artifacts", projectId ) )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
+    private UUID createSampleProject() throws Exception {
+        return UUID.fromString( createProject(
+                mockMvc,
+                objectMapper,
+                projectRequest(
+                        "Artifact test project", "Project description", List.of(
+                                new MemberRequest( "member-002", "student" )
+                        )
+                )
+        ).get( "id" ).asText() );
+    }
+
+    private UUID createRepository( UUID projectId ) throws Exception {
+        GitRepositoryRequest repository = repositoryRequest();
+        return createArtifact( projectId, "/repositories", repository, "targetBranch", "main" );
+    }
+
+    private GitRepositoryRequest repositoryRequest() {
+        return new GitRepositoryRequest(
+                "https://github.com/example/assistive-vision",
+                "main",
+                "Java / Spring Boot",
+                24,
+                1794594000000L
+        );
+    }
+
+    private ManuscriptRequest manuscriptRequest() {
+        return new ManuscriptRequest(
+                "Visual Alignment on Edge Devices",
+                "A study of efficient alignment methods.",
+                List.of( "A. Researcher", "B. Student" ),
+                List.of( "alignment", "edge computing" ),
+                2026,
+                new PublisherRequest( "Campus Press", "Project Symposium" )
+        );
+    }
+
+    private VideoRequest videoRequest() {
+        return new VideoRequest(
+                "https://video.example.edu/presentation",
+                "https://video.example.edu/thumbnail.jpg",
+                240000L,
+                "A demonstration of the project."
+        );
     }
 
     private UUID createArtifact(

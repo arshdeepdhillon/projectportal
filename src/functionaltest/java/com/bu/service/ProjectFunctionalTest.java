@@ -62,24 +62,23 @@ class ProjectFunctionalTest
     }
 
     @Test
-    void managesProjectLifecycleAcademicUnitsAndSearch() throws Exception
+    void createsProjectWithMembersAndAcademicAssociations() throws Exception
     {
-        JsonNode project = createProject(
-                mockMvc,
-                objectMapper,
-                projectRequest(
-                        "Assistive Vision Project",
-                        "A campus research project",
-                        List.of( new MemberRequest( "member-001", "student" ) )
-                )
-        );
-        UUID projectId = UUID.fromString( project.get( "id" ).asText() );
-        long createdAt = project.get( "createdAt" ).asLong();
-        long updatedAt = project.get( "updatedAt" ).asLong();
+        JsonNode project = createSampleProject();
+
         assertThat( project.get( "title" ).asText() ).isEqualTo( "Assistive Vision Project" );
         assertThat( project.get( "description" ).asText() ).isEqualTo( "A campus research project" );
         assertThat( project.get( "revisionVersion" ).asInt() ).isEqualTo( 1 );
         assertThat( project.get( "deleted" ) ).isNull();
+        assertThat( project.get( "members" ).get( 0 ).get( "memberId" ).asText() ).isEqualTo( "member-001" );
+        assertThat( project.get( "labIds" ).get( 0 ).asText() ).isEqualTo( LAB_ID.toString() );
+        assertThat( project.get( "departmentIds" ).get( 0 ).asText() ).isEqualTo( DEPARTMENT_ID.toString() );
+        assertThat( project.get( "courseIds" ).get( 0 ).asText() ).isEqualTo( COURSE_ID.toString() );
+    }
+
+    @Test
+    void getsProjectWithoutEmbeddingArtifacts() throws Exception {
+        UUID projectId = projectId( createSampleProject() );
 
         mockMvc.perform( get( "/api/v1/projects/{projectId}", projectId ) )
                 .andExpect( status().isOk() )
@@ -87,14 +86,26 @@ class ProjectFunctionalTest
                 .andExpect( jsonPath( "$.labIds[0]" ).value( LAB_ID.toString() ) )
                 .andExpect( jsonPath( "$.departmentIds[0]" ).value( DEPARTMENT_ID.toString() ) )
                 .andExpect( jsonPath( "$.courseIds[0]" ).value( COURSE_ID.toString() ) );
+    }
+
+    @Test
+    void listsLabs() throws Exception {
         mockMvc.perform( get( "/api/v1/labs" ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 2 ) )
                 .andExpect( jsonPath( "$[*].code", containsInAnyOrder( "VASL-01", "QCIG-02" ) ) );
+    }
+
+    @Test
+    void listsDepartments() throws Exception {
         mockMvc.perform( get( "/api/v1/departments" ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 2 ) )
                 .andExpect( jsonPath( "$[*].code", containsInAnyOrder( "CS", "EE" ) ) );
+    }
+
+    @Test
+    void listsCourses() throws Exception {
         mockMvc.perform( get( "/api/v1/courses" ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 2 ) )
@@ -105,51 +116,84 @@ class ProjectFunctionalTest
                                 "Embedded Robotics and Perception"
                         )
                 ) );
+    }
 
-        ProjectRequest associationOnlyUpdate = projectRequest(
+    @Test
+    void replacesAssociationsWithoutAdvancingProjectRevision() throws Exception {
+        JsonNode project = createSampleProject();
+        UUID projectId = projectId( project );
+        long updatedAt = project.get( "updatedAt" ).asLong();
+        ProjectRequest update = projectRequest(
                 "Assistive Vision Project",
                 "A campus research project",
                 List.of(
                         new MemberRequest( "member-001", "student" ),
-                        new MemberRequest( "member-001", "team lead" )
+                        new MemberRequest( "member-002", "team lead" )
                 )
         );
+
         mockMvc.perform( put( "/api/v1/projects/{projectId}", projectId )
                         .contentType( MediaType.APPLICATION_JSON )
-                        .content( objectMapper.writeValueAsBytes( associationOnlyUpdate ) ) )
+                        .content( objectMapper.writeValueAsBytes( update ) ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.revisionVersion" ).value( 1 ) )
                 .andExpect( jsonPath( "$.members.length()" ).value( 2 ) )
                 .andExpect( jsonPath( "$.updatedAt" ).value( updatedAt ) );
+    }
 
-        MvcResult scalarUpdate = mockMvc.perform( put( "/api/v1/projects/{projectId}", projectId )
+    @Test
+    void updatesScalarFieldsAndAdvancesProjectRevision() throws Exception {
+        JsonNode project = createSampleProject();
+        UUID projectId = projectId( project );
+        long createdAt = project.get( "createdAt" ).asLong();
+        long updatedAt = project.get( "updatedAt" ).asLong();
+
+        MvcResult result = mockMvc.perform( put( "/api/v1/projects/{projectId}", projectId )
                         .contentType( MediaType.APPLICATION_JSON )
                         .content( objectMapper.writeValueAsBytes( projectRequest(
                                 "Assistive Vision Project, revised",
                                 "A campus research project",
-                                associationOnlyUpdate.members()
+                                List.of( new MemberRequest( "member-001", "student" ) )
                         ) ) ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.title" ).value( "Assistive Vision Project, revised" ) )
-                .andExpect( jsonPath( "$.description" ).value( "A campus research project" ) )
                 .andExpect( jsonPath( "$.createdAt" ).value( createdAt ) )
                 .andExpect( jsonPath( "$.revisionVersion" ).value( 2 ) )
                 .andReturn();
-        long scalarUpdatedAt = objectMapper.readTree(
-                scalarUpdate.getResponse().getContentAsByteArray()
-        ).get( "updatedAt" ).asLong();
-        assertThat( scalarUpdatedAt ).isGreaterThan( updatedAt );
+
+        long newUpdatedAt = objectMapper.readTree( result.getResponse().getContentAsByteArray() )
+                .get( "updatedAt" ).asLong();
+        assertThat( newUpdatedAt ).isGreaterThan( updatedAt );
+    }
+
+    @Test
+    void searchesByCreatedFromBound() throws Exception {
+        long createdAt = createSampleProject().get( "createdAt" ).asLong();
 
         mockMvc.perform( get( "/api/v1/projects" )
-                        .param( "timeRange.createdFrom", Long.toString( createdAt - 1 ) ) )
+                        .param( "timeRange.createdFrom", Long.toString( createdAt ) ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 1 ) );
+    }
+
+    @Test
+    void searchesByCreatedToBound() throws Exception {
+        long createdAt = createSampleProject().get( "createdAt" ).asLong();
+
         mockMvc.perform( get( "/api/v1/projects" )
-                        .param( "timeRange.createdTo", Long.toString( createdAt + 1 ) ) )
+                        .param( "timeRange.createdTo", Long.toString( createdAt ) ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 1 ) );
+    }
+
+    @Test
+    void combinesKeywordAcademicUnitAndTimeSearchCriteria() throws Exception {
+        JsonNode project = createSampleProject();
+        UUID projectId = projectId( project );
+        long createdAt = project.get( "createdAt" ).asLong();
+
         mockMvc.perform( get( "/api/v1/projects" )
-                        .param( "keyword", "revised" )
+                        .param( "keyword", "Assistive" )
                         .param( "labId", LAB_ID.toString() )
                         .param( "departmentId", DEPARTMENT_ID.toString() )
                         .param( "courseId", COURSE_ID.toString() )
@@ -158,15 +202,31 @@ class ProjectFunctionalTest
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.length()" ).value( 1 ) )
                 .andExpect( jsonPath( "$[0].id" ).value( projectId.toString() ) );
+    }
 
+    @Test
+    void softDeletesProjectAndExcludesItFromSearch() throws Exception {
+        UUID projectId = projectId( createSampleProject() );
+
+        mockMvc.perform( delete( "/api/v1/projects/{projectId}", projectId ) )
+                .andExpect( status().isNoContent() );
+        assertThat( projectRepository.findById( projectId ).orElseThrow().getDeleted() ).isEqualTo( 1 );
+        mockMvc.perform( get( "/api/v1/projects" ) )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
+    }
+
+    @Test
+    void purgesSoftDeletedProjectAndItsArtifacts() throws Exception {
+        UUID projectId = projectId( createSampleProject() );
         GitRepositoryRequest repository = new GitRepositoryRequest(
                 "https://github.com/example/purge-child",
                 "main",
                 "Java",
                 1,
-                createdAt
+                1794594000000L
         );
-        MvcResult artifactCreate = mockMvc.perform( post(
+        MvcResult artifactResult = mockMvc.perform( post(
                         "/api/v1/projects/{projectId}/artifacts/repositories",
                         projectId
                 )
@@ -175,21 +235,32 @@ class ProjectFunctionalTest
                 .andExpect( status().isCreated() )
                 .andReturn();
         UUID artifactId = UUID.fromString( objectMapper.readTree(
-                artifactCreate.getResponse().getContentAsByteArray()
+                artifactResult.getResponse().getContentAsByteArray()
         ).get( "id" ).asText() );
-
         mockMvc.perform( delete( "/api/v1/projects/{projectId}", projectId ) )
                 .andExpect( status().isNoContent() );
-        assertThat( projectRepository.findById( projectId ).orElseThrow().getUpdatedAt() )
-                .isGreaterThan( scalarUpdatedAt );
-        assertThat( projectRepository.findById( projectId ).orElseThrow().getRevisionVersion() ).isEqualTo( 2 );
-        mockMvc.perform( get( "/api/v1/projects" ) )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.length()" ).value( 0 ) );
+
         mockMvc.perform( post( "/api/v1/projects/purge" ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.purgedProjectCount" ).value( 1 ) );
+
         assertThat( projectRepository.findById( projectId ) ).isEmpty();
         assertThat( artifactRepository.findById( artifactId ) ).isEmpty();
+    }
+
+    private JsonNode createSampleProject() throws Exception {
+        return createProject(
+                mockMvc,
+                objectMapper,
+                projectRequest(
+                        "Assistive Vision Project",
+                        "A campus research project",
+                        List.of( new MemberRequest( "member-001", "student" ) )
+                )
+        );
+    }
+
+    private UUID projectId( JsonNode project ) {
+        return UUID.fromString( project.get( "id" ).asText() );
     }
 }

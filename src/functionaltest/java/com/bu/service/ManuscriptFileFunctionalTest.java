@@ -7,7 +7,6 @@ package com.bu.service;
 import com.bu.repository.ProjectRepository;
 import com.bu.service.repositoryindexer.api.ArtifactApi.ManuscriptRequest;
 import com.bu.service.repositoryindexer.api.ProjectApi.MemberRequest;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,72 +65,62 @@ class ManuscriptFileFunctionalTest
     }
 
     @Test
-    void uploadsReplacesDownloadsAndDeletesManuscriptFiles() throws Exception
+    void createsFileMetadataOnFirstUpload() throws Exception
     {
-        UUID projectId = UUID.fromString( createProject(
-                mockMvc,
-                objectMapper,
-                projectRequest(
-                        "Manuscript file project", "Project description", List.of(
-                                new MemberRequest( "member-003", "student" )
-                        )
-                )
-        ).get( "id" ).asText() );
-        ManuscriptRequest manuscript = new ManuscriptRequest(
-                "Manuscript with file",
-                "File storage test.",
-                List.of( "A. Researcher" ),
-                List.of( "storage" ),
-                2026,
-                null
-        );
-        byte[] manuscriptResponse = mockMvc.perform( post(
-                        "/api/v1/projects/{projectId}/artifacts/manuscripts",
-                        projectId
-                )
-                        .contentType( MediaType.APPLICATION_JSON )
-                        .content( objectMapper.writeValueAsBytes( manuscript ) ) )
-                .andExpect( status().isCreated() )
-                .andReturn()
-                .getResponse()
-                .getContentAsByteArray();
-        JsonNode artifact = objectMapper.readTree( manuscriptResponse );
-        UUID artifactId = UUID.fromString( artifact.get( "id" ).asText() );
+        UUID projectId = createSampleProject();
+        UUID artifactId = createManuscript( projectId, "Manuscript with file" );
+        byte[] content = "manuscript contents".getBytes( StandardCharsets.UTF_8 );
 
-        byte[] fileBytes = "manuscript contents".getBytes();
-        MockMultipartFile upload = new MockMultipartFile(
-                "file",
-                "paper.pdf",
-                MediaType.APPLICATION_PDF_VALUE,
-                fileBytes
-        );
         mockMvc.perform( multipart(
                         "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
                         projectId,
                         artifactId
                 )
-                        .file( upload ) )
+                        .file( upload( "paper.pdf", content ) ) )
                 .andExpect( status().isCreated() )
-                .andExpect( jsonPath( "$.sha256" ).value( sha256( fileBytes ) ) )
+                .andExpect( jsonPath( "$.sha256" ).value( sha256( content ) ) )
                 .andExpect( jsonPath( "$.originalFilename" ).value( "paper.pdf" ) )
                 .andExpect( jsonPath( "$.mediaType" ).value( MediaType.APPLICATION_PDF_VALUE ) );
+    }
 
-        MockMultipartFile replacement = new MockMultipartFile(
-                "file",
-                "paper-revised.pdf",
-                MediaType.APPLICATION_PDF_VALUE,
-                "revised manuscript".getBytes()
-        );
+    @Test
+    void replacesExistingFileAndItsMetadata() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID artifactId = createManuscript( projectId, "Manuscript with file" );
         mockMvc.perform( multipart(
                         "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
                         projectId,
                         artifactId
                 )
-                        .file( replacement ) )
+                        .file( upload( "paper.pdf", "original".getBytes( StandardCharsets.UTF_8 ) ) ) )
+                .andExpect( status().isCreated() );
+        byte[] replacement = "revised manuscript".getBytes( StandardCharsets.UTF_8 );
+
+        mockMvc.perform( multipart(
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
+                        projectId,
+                        artifactId
+                )
+                        .file( upload( "paper-revised.pdf", replacement ) ) )
                 .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.sha256" ).value( sha256( "revised manuscript".getBytes() ) ) )
+                .andExpect( jsonPath( "$.sha256" ).value( sha256( replacement ) ) )
                 .andExpect( jsonPath( "$.originalFilename" ).value( "paper-revised.pdf" ) )
                 .andExpect( jsonPath( "$.mediaType" ).value( MediaType.APPLICATION_PDF_VALUE ) );
+    }
+
+    @Test
+    void downloadsFileBytesAndHeaders() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID artifactId = createManuscript( projectId, "Manuscript with file" );
+        byte[] content = "downloadable manuscript".getBytes( StandardCharsets.UTF_8 );
+        mockMvc.perform( multipart(
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
+                        projectId,
+                        artifactId
+                )
+                        .file( upload( "paper.pdf", content ) ) )
+                .andExpect( status().isCreated() );
+
         mockMvc.perform( get(
                         "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
                         projectId,
@@ -139,53 +128,22 @@ class ManuscriptFileFunctionalTest
                 ) )
                 .andExpect( status().isOk() )
                 .andExpect( header().string( HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE ) )
-                .andExpect( header().string(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        containsString( "paper-revised.pdf" )
-                ) )
-                .andExpect( result -> assertThat( result.getResponse().getContentAsByteArray() )
-                        .isEqualTo( "revised manuscript".getBytes() ) );
+                .andExpect( header().string( HttpHeaders.CONTENT_DISPOSITION, containsString( "paper.pdf" ) ) )
+                .andExpect( result -> assertThat( result.getResponse().getContentAsByteArray() ).isEqualTo( content ) );
+    }
 
-        UUID secondArtifactId = createManuscript( projectId, "Second manuscript" );
+    @Test
+    void deletesFileWithoutDeletingManuscript() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID artifactId = createManuscript( projectId, "Manuscript with file" );
         mockMvc.perform( multipart(
                         "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
                         projectId,
-                        secondArtifactId
+                        artifactId
                 )
-                        .file( new MockMultipartFile(
-                                "file",
-                                "paper.pdf",
-                                MediaType.APPLICATION_PDF_VALUE,
-                                "second manuscript".getBytes()
-                        ) ) )
+                        .file( upload( "paper.pdf", "contents".getBytes( StandardCharsets.UTF_8 ) ) ) )
                 .andExpect( status().isCreated() );
 
-        createManuscript( projectId, "Manuscript without a file" );
-        UUID deletedManuscriptId = createManuscript( projectId, "Deleted manuscript" );
-        mockMvc.perform( multipart(
-                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
-                        projectId,
-                        deletedManuscriptId
-                )
-                        .file( new MockMultipartFile(
-                                "file",
-                                "deleted.pdf",
-                                MediaType.APPLICATION_PDF_VALUE,
-                                "deleted manuscript".getBytes()
-                        ) ) )
-                .andExpect( status().isCreated() );
-        mockMvc.perform( delete(
-                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}",
-                        projectId,
-                        deletedManuscriptId
-                ) )
-                .andExpect( status().isNoContent() );
-
-        assertThat( zipEntries( projectId ) )
-                .isEqualTo( Map.of(
-                        artifactId + "/paper-revised.pdf", "revised manuscript",
-                        secondArtifactId + "/paper.pdf", "second manuscript"
-                ) );
         mockMvc.perform( delete(
                         "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
                         projectId,
@@ -199,25 +157,50 @@ class ManuscriptFileFunctionalTest
                 ) )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.file" ).value( nullValue() ) );
-        assertThat( zipEntries( projectId ) )
-                .isEqualTo( Map.of( secondArtifactId + "/paper.pdf", "second manuscript" ) );
+    }
+
+    @Test
+    void zipContainsOnlyFilesForActiveManuscripts() throws Exception {
+        UUID projectId = createSampleProject();
+        UUID firstManuscriptId = createManuscript( projectId, "First manuscript" );
+        UUID secondManuscriptId = createManuscript( projectId, "Second manuscript" );
+        createManuscript( projectId, "Manuscript without a file" );
+        UUID deletedManuscriptId = createManuscript( projectId, "Deleted manuscript" );
+        uploadFile( projectId, firstManuscriptId, "first.pdf", "first".getBytes( StandardCharsets.UTF_8 ) );
+        uploadFile( projectId, secondManuscriptId, "second.pdf", "second".getBytes( StandardCharsets.UTF_8 ) );
+        uploadFile( projectId, deletedManuscriptId, "deleted.pdf", "deleted".getBytes( StandardCharsets.UTF_8 ) );
         mockMvc.perform( delete(
-                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}",
                         projectId,
-                        secondArtifactId
+                        deletedManuscriptId
                 ) )
                 .andExpect( status().isNoContent() );
-        assertThat( zipEntries( projectId ) ).isEmpty();
 
-        mockMvc.perform( multipart(
-                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
-                        projectId,
-                        artifactId
-                )
-                        .file( replacement ) )
-                .andExpect( status().isCreated() );
         assertThat( zipEntries( projectId ) )
-                .isEqualTo( Map.of( artifactId + "/paper-revised.pdf", "revised manuscript" ) );
+                .isEqualTo( Map.of(
+                        firstManuscriptId + "/first.pdf", "first",
+                        secondManuscriptId + "/second.pdf", "second"
+                ) );
+    }
+
+    @Test
+    void zipIsEmptyWhenNoManuscriptHasAFile() throws Exception {
+        UUID projectId = createSampleProject();
+        createManuscript( projectId, "Manuscript without a file" );
+
+        assertThat( zipEntries( projectId ) ).isEmpty();
+    }
+
+    private UUID createSampleProject() throws Exception {
+        return UUID.fromString( createProject(
+                mockMvc,
+                objectMapper,
+                projectRequest(
+                        "Manuscript file project", "Project description", List.of(
+                                new MemberRequest( "member-003", "student" )
+                        )
+                )
+        ).get( "id" ).asText() );
     }
 
     private UUID createManuscript( UUID projectId, String title ) throws Exception
@@ -241,6 +224,20 @@ class ManuscriptFileFunctionalTest
                 .getResponse()
                 .getContentAsByteArray();
         return UUID.fromString( objectMapper.readTree( response ).get( "id" ).asText() );
+    }
+
+    private MockMultipartFile upload( String filename, byte[] content ) {
+        return new MockMultipartFile( "file", filename, MediaType.APPLICATION_PDF_VALUE, content );
+    }
+
+    private void uploadFile( UUID projectId, UUID artifactId, String filename, byte[] content ) throws Exception {
+        mockMvc.perform( multipart(
+                        "/api/v1/projects/{projectId}/artifacts/manuscripts/{artifactId}/file",
+                        projectId,
+                        artifactId
+                )
+                        .file( upload( filename, content ) ) )
+                .andExpect( status().isCreated() );
     }
 
     private Map<String, String> zipEntries( UUID projectId ) throws Exception

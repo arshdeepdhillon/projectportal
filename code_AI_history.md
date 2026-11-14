@@ -308,3 +308,29 @@
 - Verification: Docker image build completed `check bootJar` successfully. The suite contains 3 HTTP functional tests
   and 5 unit tests. `git diff --check` passed; Compose configuration validated. User prompt recorded verbatim as Prompt
   9.
+
+## AI AGENT BUILD: Focused A2 test behaviors
+
+- Working-tree change (uncommitted).
+- Refactored broad functional methods into focused behaviors: project create/read, academic-unit listings, association
+  and scalar updates, separate time-bound searches, combined search criteria, soft deletion, and purge; CRUD operations
+  for each artifact type; artifact listing and search; and manuscript-file create, replace, download, delete, ZIP
+  selection, and empty ZIP cases.
+- Split the combined `ProjectService.search` unit test into keyword, academic-unit, artifact-type, lower/upper time
+  bound, and one-sided time-range tests. Split manuscript-file upload unit coverage into create and replace cases.
+- Agent-authored hunks: all changes in the five test source files below. Contribution headers remain 100%
+  agent-generated.
+- Per-file source snapshots (contribution header excluded; retained substantive logical lines):
+  - File: `src/functionaltest/java/com/bu/service/ProjectFunctionalTest.java` — Agent lines: 242; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ArtifactFunctionalTest.java` — Agent lines: 345; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/functionaltest/java/com/bu/service/ManuscriptFileFunctionalTest.java` — Agent lines: 251; Human lines: 0;
+    Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/service/repositoryindexer/featureservice/ProjectServiceTest.java` — Agent lines: 146;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `src/test/java/com/bu/service/repositoryindexer/featureservice/ArtifactServiceTest.java` — Agent lines: 136;
+    Human lines: 0; Agent: 100%; Human: 0%
+- Verification: Docker `check bootJar` passed with 33 functional and 12 unit test methods. An initial run caught an
+  incorrect expected SHA-256 literal in the replacement unit test; after correcting the digest, the full build passed.
+  `git diff --check` and Compose configuration validation passed. User prompt recorded verbatim as Prompt 10.
