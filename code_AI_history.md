@@ -334,3 +334,146 @@
 - Verification: Docker `check bootJar` passed with 33 functional and 12 unit test methods. An initial run caught an
   incorrect expected SHA-256 literal in the replacement unit test; after correcting the digest, the full build passed.
   `git diff --check` and Compose configuration validation passed. User prompt recorded verbatim as Prompt 10.
+
+## AI AGENT BUILD: Submission assets
+
+- Working-tree change (uncommitted).
+- Created `functional-codebase/` as a standalone snapshot of the Domain 1 happy-path implementation generated for
+  Prompt 7. The snapshot includes production and test sources, migrations, runtime/build configuration, and Docker
+  files. Removed only the copied IntelliJ module metadata. No endpoint or runtime behavior was changed; the added
+  comments record stack, contribution, and pending human verification.
+- Recorded this task's exact user prompt and clarification/choice responses in Prompt 11 of `Prompt_test_log.md`.
+- Agent-authored hunks: all snapshot headers, report and journal content, and this history entry. The snapshot source
+  was copied from AI-authored source files; no human code edits were introduced.
+- Per-file snapshots (contribution/provenance headers excluded; code comments counted only when substantive):
+  - File: `functional-codebase/src/functionaltest/java/com/bu/service/ArtifactFunctionalTest.java` — Agent lines: 326;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/functionaltest/java/com/bu/service/FunctionalTestSupport.java` — Agent lines: 42;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/functionaltest/java/com/bu/service/ManuscriptFileFunctionalTest.java` — Agent lines:
+    243; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/functionaltest/java/com/bu/service/ProjectFunctionalTest.java` — Agent lines: 229;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/Application.java` — Agent lines: 11; Human lines: 0; Agent: 100%;
+    Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/repository/AcademicUnitRepository.java` — Agent lines: 10; Human
+    lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/repository/ArtifactRepository.java` — Agent lines: 23; Human lines:
+    0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/repository/ProjectRepository.java` — Agent lines: 11; Human lines:
+    0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/api/AcademicUnitApi.java` — Agent lines:
+    14; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/api/ArtifactApi.java` — Agent lines: 93;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/api/ProjectApi.java` — Agent lines: 42;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/config/AcademicUnitFixtureLoader.java` —
+    Agent lines: 59; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/controller/AcademicUnitController.java` —
+    Agent lines: 33; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/controller/ArtifactController.java` —
+    Agent lines: 186; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/controller/ProjectController.java` — Agent
+    lines: 75; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/AcademicUnit.java` — Agent lines:
+    52; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/Artifact.java` — Agent lines: 89;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/ArtifactType.java` — Agent lines:
+    27; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/ManuscriptFile.java` — Agent lines:
+    46; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/ManuscriptFileData.java` — Agent
+    lines: 36; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/Project.java` — Agent lines: 62;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/ProjectMember.java` — Agent lines:
+    38; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/featureservice/AcademicUnitService.java` —
+    Agent lines: 36; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/featureservice/ArtifactService.java` —
+    Agent lines: 306; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/java/com/bu/service/repositoryindexer/featureservice/ProjectService.java` —
+    Agent lines: 195; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/test/java/com/bu/service/repositoryindexer/featureservice/ArtifactServiceTest.java` —
+    Agent lines: 133; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/test/java/com/bu/service/repositoryindexer/featureservice/ProjectServiceTest.java` —
+    Agent lines: 139; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/resources/db/migration/V1__create_persistence_records.sql` — Agent lines: 4;
+    Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/resources/db/migration/V2__create_project_artifact_catalog.sql` — Agent lines:
+    70; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/build.gradle` — Agent lines: 71; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/settings.gradle` — Agent lines: 1; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/Dockerfile` — Agent lines: 16; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/docker-compose.yml` — Agent lines: 32; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/trivy.yaml` — Agent lines: 2; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/sonar-project.properties` — Agent lines: 3; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/src/main/resources/application.properties` — Agent lines: 8; Human lines: 0; Agent: 100%;
+    Human: 0%
+  - File: `functional-codebase/src/main/resources/application-dev.properties` — Agent lines: 4; Human lines: 0; Agent:
+    100%; Human: 0%
+  - File: `functional-codebase/src/functionaltest/resources/application-test.properties` — Agent lines: 4; Human lines:
+    0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/gradle/wrapper/gradle-wrapper.properties` — Agent lines: 5; Human lines: 0; Agent: 100%;
+    Human: 0%
+  - File: `functional-codebase/gradlew` — Agent lines: 94; Human lines: 0; Agent: 100%; Human: 0%
+  - File: `functional-codebase/gradlew.bat` — Agent lines: 39; Human lines: 0; Agent: 100%; Human: 0%
+- Verification: Docker build of the snapshot passed Gradle `dependencies`, `check`, and `bootJar`. The available
+  A2-branch Semgrep job completed with zero findings; Trivy completed dependency and image scans. SonarQube was
+  skipped on `a2`; the available master run predates this source and was excluded. `git diff --check` and
+  `git diff --cached --check` passed; Compose configuration parsed successfully, all 27 Java files have the snapshot
+  provenance header, and the report/log whitespace scan found no matches.
+
+## AI AGENT BUILD: A2 Deliverable Evidence Reconciliation
+
+- Uncommitted working-tree changes; no commit was created.
+- `Prompt_test_log.md`, and this history entry. Also replaced the verification-status header line in 38 snapshot
+  assets; no executable source logic or runtime behavior changed.
+- The exact user prompt and lack of an available clarification response are recorded as Prompt 12 in
+  `Prompt_test_log.md`. One agent-authored metadata hunk changed in each of:
+  `functional-codebase/src/functionaltest/java/com/bu/service/ArtifactFunctionalTest.java`,
+  `functional-codebase/src/functionaltest/java/com/bu/service/FunctionalTestSupport.java`,
+  `functional-codebase/src/functionaltest/java/com/bu/service/ManuscriptFileFunctionalTest.java`,
+  `functional-codebase/src/functionaltest/java/com/bu/service/ProjectFunctionalTest.java`,
+  `functional-codebase/src/functionaltest/resources/application-test.properties`,
+  `functional-codebase/src/main/java/com/bu/Application.java`,
+  `functional-codebase/src/main/java/com/bu/repository/AcademicUnitRepository.java`,
+  `functional-codebase/src/main/java/com/bu/repository/ArtifactRepository.java`,
+  `functional-codebase/src/main/java/com/bu/repository/ProjectRepository.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/api/AcademicUnitApi.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/api/ArtifactApi.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/api/ProjectApi.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/config/AcademicUnitFixtureLoader.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/controller/AcademicUnitController.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/controller/ArtifactController.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/controller/ProjectController.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/AcademicUnit.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/Artifact.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/ArtifactType.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/ManuscriptFile.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/ManuscriptFileData.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/Project.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/entity/ProjectMember.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/featureservice/AcademicUnitService.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/featureservice/ArtifactService.java`,
+  `functional-codebase/src/main/java/com/bu/service/repositoryindexer/featureservice/ProjectService.java`,
+  `functional-codebase/src/test/java/com/bu/service/repositoryindexer/featureservice/ArtifactServiceTest.java`,
+  `functional-codebase/src/test/java/com/bu/service/repositoryindexer/featureservice/ProjectServiceTest.java`,
+  `functional-codebase/src/main/resources/application-dev.properties`,
+  `functional-codebase/src/main/resources/application.properties`,
+  `functional-codebase/src/main/resources/db/migration/V1__create_persistence_records.sql`,
+  `functional-codebase/src/main/resources/db/migration/V2__create_project_artifact_catalog.sql`,
+  `functional-codebase/Dockerfile`, `functional-codebase/build.gradle`,
+  `functional-codebase/docker-compose.yml`, `functional-codebase/settings.gradle`,
+  `functional-codebase/sonar-project.properties`, and `functional-codebase/trivy.yaml`.
+  Each is a one-line replacement; retained substantive line counts and Agent/Human attribution are unchanged from the
+  preceding per-file snapshots.
+- Verification: inspected the snapshot's controller mappings, ZIP-entry construction, and database password fallbacks
+  directly; cross-checked scanner totals and SonarQube gate status against the supplied archive. The A2 run and
+  supplemental `master` run remain explicitly distinct. Compared the A2 commit's root `ProjectController`,
+  `ArtifactService`, `application.properties`, and `docker-compose.yml` with the snapshot; relevant contents match
+  apart from provenance headers, though the A2 run did not scan the later-added snapshot directory. The header-only
+  source changes were not followed by a new build/test run; existing Docker build and test evidence for
+  `functional-codebase/` is recorded in the preceding entry.
